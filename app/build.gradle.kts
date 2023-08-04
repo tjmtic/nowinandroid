@@ -24,6 +24,7 @@ plugins {
     id("jacoco")
     id("nowinandroid.android.application.firebase")
     id("com.google.android.gms.oss-licenses-plugin")
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -43,7 +44,7 @@ android {
         debug {
             applicationIdSuffix = NiaBuildType.DEBUG.applicationIdSuffix
         }
-        val release by getting {
+        val release = getByName("release") {
             isMinifyEnabled = true
             applicationIdSuffix = NiaBuildType.RELEASE.applicationIdSuffix
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -121,6 +122,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.coil.kt)
 
+    baselineProfile(project(":benchmarks"))
+
     // Core functions
     testImplementation(project(":core:testing"))
     testImplementation(project(":core:datastore-test"))
@@ -132,4 +135,8 @@ dependencies {
     implementation(libs.work.testing)
     kaptTest(libs.hilt.compiler)
 
+}
+
+baselineProfile {
+    automaticGenerationDuringBuild = true
 }
