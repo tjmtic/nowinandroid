@@ -193,6 +193,9 @@ jobs:
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
+      - name: Install GMD image
+        run: yes | "$ANDROID_HOME"/tools/bin/sdkmanager "system-images;android-33;google_apis;x86_64 Google APIs Intel x86_64 Atom System Image"
+
       - name: Build AndroidTest apps
         run: ./gradlew packageDemoDebug packageDemoDebugAndroidTest
 
