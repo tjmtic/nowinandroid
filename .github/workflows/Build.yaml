@@ -37,6 +37,12 @@ jobs:
       - name: Check spotless
         run: ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
 
+      - name: Install GMD image
+        run: yes | "$ANDROID_HOME"/tools/bin/sdkmanager "system-images;android-30;aosp_atd;x86"
+
+      - name: Accept Android licenses
+        run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
       - name: Build all build type and flavor permutations
         run: ./gradlew assemble
 
@@ -190,11 +196,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Install GMD image
+        run: yes | "$ANDROID_HOME"/tools/bin/sdkmanager "system-images;android-30;aosp_atd;x86"
+
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      - name: Install GMD image
-        run: yes | "$ANDROID_HOME"/tools/bin/sdkmanager "system-images;android-33;google_apis;x86_64 Google APIs Intel x86_64 Atom System Image"
 
       - name: Build AndroidTest apps
         run: ./gradlew packageDemoDebug packageDemoDebugAndroidTest
