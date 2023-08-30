@@ -44,7 +44,9 @@ jobs:
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build all build type and flavor permutations
-        run: ./gradlew assemble
+        run: ./gradlew assemble --max-workers=1
+          -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
+
 
       - name: Upload build outputs (APKs)
         uses: actions/upload-artifact@v3
