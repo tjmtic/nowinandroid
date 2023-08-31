@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 90
 
     steps:
@@ -38,16 +38,19 @@ jobs:
         run: ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
 
       - name: Install GMD image
-        run: yes | "$ANDROID_HOME"/tools/bin/sdkmanager "system-images;android-30;aosp_atd;x86"
+        run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-30;aosp_atd;x86"
 
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build all build type and flavor permutations
-        run: ./gradlew assemble --max-workers=1
-          -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
-
-
+        run: ./gradlew assemble -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
+            -Dorg.gradle.workers.max=1
+            -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+            -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=180
+            -Pandroid.experimental.androidTest.numManagedDeviceShards=1
+            -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+            -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=false
       - name: Upload build outputs (APKs)
         uses: actions/upload-artifact@v3
         with:
@@ -58,7 +61,7 @@ jobs:
         run: ./gradlew testDemoDebug testProdDebug
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     permissions:
       contents: write
@@ -199,7 +202,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Install GMD image
-        run: yes | "$ANDROID_HOME"/tools/bin/sdkmanager "system-images;android-30;aosp_atd;x86"
+        run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-30;aosp_atd;x86"
 
       - name: Accept Android licenses
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
