@@ -44,9 +44,9 @@ jobs:
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build all build type and flavor permutations
-        run: ./gradlew assemble -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
-            -Dorg.gradle.workers.max=1
-            -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+        run: ./gradlew assemble --max-workers=1
+            -Pandroidx.benchmark.enabledRules=BaselineProfile
+            -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
             -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=180
             -Pandroid.experimental.androidTest.numManagedDeviceShards=1
             -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
@@ -212,7 +212,8 @@ jobs:
 
       - name: Run instrumented tests with GMD
         run: ./gradlew ciDemoDebugAndroidTest --no-parallel --max-workers=1
-          -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
+          -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
+          -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
 
       - name: Upload test reports
         if: success() || failure()
