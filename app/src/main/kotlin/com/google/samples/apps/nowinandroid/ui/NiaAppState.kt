@@ -16,12 +16,15 @@
 
 package com.google.samples.apps.nowinandroid.ui
 
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.NavigationSuiteType
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -97,12 +100,6 @@ class NiaAppState(
             else -> null
         }
 
-    val shouldShowBottomBar: Boolean
-        get() = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-
-    val shouldShowNavRail: Boolean
-        get() = !shouldShowBottomBar
-
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)
         .stateIn(
@@ -132,6 +129,17 @@ class NiaAppState(
                 SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptySet(),
             )
+
+    @OptIn(ExperimentalMaterial3AdaptiveApi::class)
+    val navigationSuiteType: NavigationSuiteType
+        @Composable get() =
+            if (LocalConfiguration.current.screenWidthDp >= 1240) {
+                NavigationSuiteType.NavigationDrawer
+            } else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
+                NavigationSuiteType.NavigationBar
+            } else {
+                NavigationSuiteType.NavigationRail
+            }
 
     /**
      * UI logic for navigating to a top level destination in the app. Top level destinations have

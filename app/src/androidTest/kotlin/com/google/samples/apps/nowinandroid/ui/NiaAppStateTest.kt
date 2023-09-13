@@ -41,7 +41,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -107,54 +106,6 @@ class NiaAppStateTest {
         assertTrue(state.topLevelDestinations[0].name.contains("for_you", true))
         assertTrue(state.topLevelDestinations[1].name.contains("bookmarks", true))
         assertTrue(state.topLevelDestinations[2].name.contains("interests", true))
-    }
-
-    @Test
-    fun niaAppState_showBottomBar_compact() = runTest {
-        composeTestRule.setContent {
-            state = NiaAppState(
-                navController = NavHostController(LocalContext.current),
-                coroutineScope = backgroundScope,
-                windowSizeClass = getCompactWindowClass(),
-                networkMonitor = networkMonitor,
-                userNewsResourceRepository = userNewsResourceRepository,
-            )
-        }
-
-        assertTrue(state.shouldShowBottomBar)
-        assertFalse(state.shouldShowNavRail)
-    }
-
-    @Test
-    fun niaAppState_showNavRail_medium() = runTest {
-        composeTestRule.setContent {
-            state = NiaAppState(
-                navController = NavHostController(LocalContext.current),
-                coroutineScope = backgroundScope,
-                windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(800.dp, 800.dp)),
-                networkMonitor = networkMonitor,
-                userNewsResourceRepository = userNewsResourceRepository,
-            )
-        }
-
-        assertTrue(state.shouldShowNavRail)
-        assertFalse(state.shouldShowBottomBar)
-    }
-
-    @Test
-    fun niaAppState_showNavRail_large() = runTest {
-        composeTestRule.setContent {
-            state = NiaAppState(
-                navController = NavHostController(LocalContext.current),
-                coroutineScope = backgroundScope,
-                windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(900.dp, 1200.dp)),
-                networkMonitor = networkMonitor,
-                userNewsResourceRepository = userNewsResourceRepository,
-            )
-        }
-
-        assertTrue(state.shouldShowNavRail)
-        assertFalse(state.shouldShowBottomBar)
     }
 
     @Test
