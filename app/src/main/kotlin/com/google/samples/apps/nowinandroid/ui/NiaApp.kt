@@ -33,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.NavigationSuiteScaffold
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -67,12 +67,12 @@ import com.google.samples.apps.nowinandroid.feature.settings.R as settingsR
 )
 @Composable
 fun NiaApp(
-    windowSizeClass: WindowSizeClass,
+    windowSize: DpSize,
     networkMonitor: NetworkMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
     appState: NiaAppState = rememberNiaAppState(
         networkMonitor = networkMonitor,
-        windowSizeClass = windowSizeClass,
+        windowSize = windowSize,
         userNewsResourceRepository = userNewsResourceRepository,
     ),
 ) {

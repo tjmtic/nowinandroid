@@ -17,11 +17,7 @@
 package com.google.samples.apps.nowinandroid.ui
 
 import android.util.Log
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
@@ -61,7 +57,6 @@ import javax.inject.Inject
 /**
  * Tests that the navigation UI is rendered correctly on different screen sizes.
  */
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 // Configure Robolectric to use a very large screen size that can fit all of the test sizes.
@@ -138,21 +133,14 @@ class NiaAppScreenSizesScreenshotTests {
         composeTestRule.setContent {
             CompositionLocalProvider(
                 LocalInspectionMode provides true,
-                LocalConfiguration provides LocalConfiguration.current.apply {
-                    screenWidthDp = width.value.toInt()
-                    screenHeightDp = height.value.toInt()
-                },
             ) {
-                TestHarness(size = DpSize(width, height)) {
-                    BoxWithConstraints {
-                        NiaApp(
-                            windowSizeClass = WindowSizeClass.calculateFromSize(
-                                DpSize(maxWidth, maxHeight),
-                            ),
-                            networkMonitor = networkMonitor,
-                            userNewsResourceRepository = userNewsResourceRepository,
-                        )
-                    }
+                val windowSize = DpSize(width, height)
+                TestHarness(size = windowSize) {
+                    NiaApp(
+                        windowSize = windowSize,
+                        networkMonitor = networkMonitor,
+                        userNewsResourceRepository = userNewsResourceRepository,
+                    )
                 }
             }
         }

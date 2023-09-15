@@ -18,13 +18,12 @@ package com.google.samples.apps.nowinandroid.ui
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.NavigationSuiteType
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -56,7 +55,7 @@ import kotlinx.coroutines.flow.stateIn
 
 @Composable
 fun rememberNiaAppState(
-    windowSizeClass: WindowSizeClass,
+    windowSize: DpSize,
     networkMonitor: NetworkMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -66,14 +65,14 @@ fun rememberNiaAppState(
     return remember(
         navController,
         coroutineScope,
-        windowSizeClass,
+        windowSize,
         networkMonitor,
         userNewsResourceRepository,
     ) {
         NiaAppState(
             navController,
             coroutineScope,
-            windowSizeClass,
+            windowSize,
             networkMonitor,
             userNewsResourceRepository,
         )
@@ -84,7 +83,7 @@ fun rememberNiaAppState(
 class NiaAppState(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
-    val windowSizeClass: WindowSizeClass,
+    private val windowSize: DpSize,
     networkMonitor: NetworkMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
 ) {
@@ -132,14 +131,15 @@ class NiaAppState(
 
     @OptIn(ExperimentalMaterial3AdaptiveApi::class)
     val navigationSuiteType: NavigationSuiteType
-        @Composable get() =
-            if (LocalConfiguration.current.screenWidthDp >= 1240) {
+        @Composable get() {
+            return if (windowSize.width >= 1240.dp) {
                 NavigationSuiteType.NavigationDrawer
-            } else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
-                NavigationSuiteType.NavigationBar
-            } else {
+            } else if (windowSize.width >= 600.dp) {
                 NavigationSuiteType.NavigationRail
+            } else {
+                NavigationSuiteType.NavigationBar
             }
+        }
 
     /**
      * UI logic for navigating to a top level destination in the app. Top level destinations have

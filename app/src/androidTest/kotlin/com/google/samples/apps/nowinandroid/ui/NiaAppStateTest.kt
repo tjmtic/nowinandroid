@@ -16,8 +16,6 @@
 
 package com.google.samples.apps.nowinandroid.ui
 
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -49,7 +47,6 @@ import kotlin.test.assertTrue
  * Note: This could become an unit test if Robolectric is added to the project and the Context
  * is faked.
  */
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class NiaAppStateTest {
 
     @get:Rule
@@ -74,7 +71,7 @@ class NiaAppStateTest {
                 NiaAppState(
                     navController = navController,
                     coroutineScope = backgroundScope,
-                    windowSizeClass = getCompactWindowClass(),
+                    windowSize = getCompactWindowSize(),
                     networkMonitor = networkMonitor,
                     userNewsResourceRepository = userNewsResourceRepository,
                 )
@@ -96,7 +93,7 @@ class NiaAppStateTest {
     fun niaAppState_destinations() = runTest {
         composeTestRule.setContent {
             state = rememberNiaAppState(
-                windowSizeClass = getCompactWindowClass(),
+                windowSize = getCompactWindowSize(),
                 networkMonitor = networkMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
             )
@@ -114,7 +111,7 @@ class NiaAppStateTest {
             state = NiaAppState(
                 navController = NavHostController(LocalContext.current),
                 coroutineScope = backgroundScope,
-                windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(900.dp, 1200.dp)),
+                windowSize = DpSize(900.dp, 1200.dp),
                 networkMonitor = networkMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
             )
@@ -128,7 +125,7 @@ class NiaAppStateTest {
         )
     }
 
-    private fun getCompactWindowClass() = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp))
+    private fun getCompactWindowSize() = DpSize(500.dp, 300.dp)
 }
 
 @Composable
