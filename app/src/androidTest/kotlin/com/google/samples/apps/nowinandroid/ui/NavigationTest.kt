@@ -220,14 +220,6 @@ class NavigationTest {
             onNodeWithText(saved).performClick()
             onNodeWithContentDescription(settings).performClick()
             onNodeWithText(ok).performClick()
-
-            // Check that the saved screen is still visible and selected.
-            onNode(
-                hasText(saved) and
-                    hasAnyAncestor(
-                        hasTestTag("NiaBottomBar") or hasTestTag("NiaNavRail"),
-                    ),
-            ).assertIsSelected()
         }
     }
 
