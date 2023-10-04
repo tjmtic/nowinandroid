@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -52,6 +53,7 @@ fun LazyGridScope.newsFeed(
     onNewsResourcesCheckedChanged: (String, Boolean) -> Unit,
     onNewsResourceViewed: (String) -> Unit,
     onTopicClick: (String) -> Unit,
+    openToChrome: Boolean = true,
     onExpandedCardClick: () -> Unit = {},
 ) {
     when (feedState) {
@@ -74,10 +76,13 @@ fun LazyGridScope.newsFeed(
                     isBookmarked = userNewsResource.isSaved,
                     onClick = {
                         onExpandedCardClick()
+
                         analyticsHelper.logNewsResourceOpened(
                             newsResourceId = userNewsResource.id,
                         )
-                        launchCustomChromeTab(context, resourceUrl, backgroundColor)
+                        //Launch Tab if openToChrome is true
+                        if(openToChrome) launchCustomChromeTab(context, resourceUrl, backgroundColor)
+
                         onNewsResourceViewed(userNewsResource.id)
                     },
                     hasBeenViewed = userNewsResource.hasBeenViewed,

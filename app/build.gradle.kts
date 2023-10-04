@@ -105,6 +105,7 @@ dependencies {
     androidTestImplementation(kotlin("test"))
     debugImplementation(libs.androidx.compose.ui.testManifest)
     debugImplementation(project(":ui-test-hilt-manifest"))
+    androidTestImplementation(libs.androidx.espresso.intents)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
