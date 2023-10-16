@@ -25,9 +25,26 @@ import com.google.samples.apps.nowinandroid.core.network.model.NetworkNewsResour
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkTopic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.Instant.Companion
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Request.Builder
+import okhttp3.RequestBody
+import okhttp3.Response
+import okio.use
 import javax.inject.Inject
 
 /**
@@ -42,14 +59,124 @@ class FakeNiaNetworkDataSource @Inject constructor(
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> =
         withContext(ioDispatcher) {
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!TOPIC!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!TOPIC!!!!")
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!TOPIC!!!")
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!TOPIC!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!TOPIC!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!TOPIC!!!")
+
             assets.open(TOPICS_ASSET).use(networkJson::decodeFromStream)
         }
 
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getNewsResources(ids: List<String>?): List<NetworkNewsResource> =
         withContext(ioDispatcher) {
-            assets.open(NEWS_ASSET).use(networkJson::decodeFromStream)
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+
+            val client = OkHttpClient().newBuilder()
+                .build()
+            val mediaType: MediaType? = "text/plain".toMediaTypeOrNull()
+            val body = RequestBody.create(mediaType, "")
+            val request: Request = Builder()
+                .url("https://ax-code-cabin-default-rtdb.firebaseio.com/test/articles/bbc/x1696204934804/test.json")
+                .method("GET" ,null)
+                .build()
+            val response: Response = client.newCall(request).execute()
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("TIME123 LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("TIME123 LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("TIME123 LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            println("TIME123  LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
+            val respo = response.body
+            val respoB = respo?.string()
+
+            println("TIME123 LOGGGING NEW CALL $respo $respoB")
+
+
+            convertToList(respoB!!)
+
+            //assets.open(NEWS_ASSET).use(networkJson::decodeFromStream)
         }
+
+
+    fun convertToList(raw:String): List<NetworkNewsResource>{
+
+
+        println("TIME123 Converting to list: $raw")
+
+        var responseList: List<NetworkNewsResource> = emptyList()
+        val obj = networkJson.decodeFromString<JsonArray>(raw)
+
+       // val content = obj
+
+        responseList = obj.map{
+            println("Object ENtry: ${it}")
+            //it.jsonObject.entries
+                val id = it.jsonObject["title"].toString()
+                val content = it.jsonObject["content"]?.jsonPrimitive?.content
+                val headerImageUrl = it.jsonObject["headerImageUrl"]?.jsonPrimitive?.content?.split(" ")
+                    ?.get(0)
+                    //?.plus('"')
+                val publishDate = "2022-05-04T23:00:00Z".toInstant()/* it.jsonObject["publishDate"].toString()*/
+                val title = it.jsonObject["title"]?.jsonPrimitive?.content
+                val type = it.jsonObject["type"]?.jsonPrimitive?.content
+                val url = it.jsonObject["url"]?.jsonPrimitive?.content
+
+                val url1 = it.jsonObject["url"]?.jsonPrimitive
+                val url2 = it.jsonObject["url"].toString()
+                val url3 = it.jsonObject.get("url").toString()
+                val topics = listOf("21")
+
+                println("MAking NEWS RESOURCE $id $title $url $type $headerImageUrl")
+                println("URLS: $url $url1 $url2 $url3")
+
+            if (title != null && content != null && url != null && headerImageUrl != null && publishDate != null && type != null && topics != null) {
+                return@map NetworkNewsResource(
+                    id,
+                    title,
+                    content,
+                    url,
+                    headerImageUrl,
+                    publishDate,
+                    type,
+                    topics
+                )
+            }
+            else{
+                return@map NetworkNewsResource("","","","","","2022-05-04T23:00:00Z".toInstant(),"", emptyList())
+            }
+            }
+
+
+
+        println("Made News Resources $responseList")
+
+        return responseList
+    }
 
     override suspend fun getTopicChangeList(after: Int?): List<NetworkChangeList> =
         getTopics().mapToChangeList(NetworkTopic::id)

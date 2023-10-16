@@ -178,7 +178,7 @@ fun NiaApp(
                     Column(Modifier.fillMaxSize()) {
                         // Show the top app bar on top level destinations.
                         val destination = appState.currentTopLevelDestination
-                        if (destination != null) {
+                        if (destination != null /*&& != SEARCH*/) {
                             NiaTopAppBar(
                                 titleRes = destination.titleTextId,
                                 navigationIcon = NiaIcons.Search,
@@ -194,6 +194,7 @@ fun NiaApp(
                                 ),
                                 onActionClick = { showSettingsDialog = true },
                                 onNavigationClick = { appState.navigateToSearch() },
+                                //onNavigationClick = { appState.navigateToTopLevelDestination(SEARCH) },
                             )
                         }
 

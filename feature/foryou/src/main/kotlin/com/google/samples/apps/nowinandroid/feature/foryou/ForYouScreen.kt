@@ -118,7 +118,7 @@ internal fun ForYouRoute(
     val deepLinkedUserNewsResource by viewModel.deepLinkedNewsResource.collectAsStateWithLifecycle()
 
     ForYouScreen(
-        isSyncing = isSyncing,
+        isSyncing = false,//isSyncing,
         onboardingUiState = onboardingUiState,
         feedState = feedState,
         deepLinkedUserNewsResource = deepLinkedUserNewsResource,
@@ -151,6 +151,8 @@ internal fun ForYouScreen(
 
     // This code should be called when the UI is ready for use and relates to Time To Full Display.
     ReportDrawnWhen { !isSyncing && !isOnboardingLoading && !isFeedLoading }
+
+    //println("$onboardingUiState $feedState $isSyncing")
 
     val itemsAvailable = feedItemsSize(feedState, onboardingUiState)
 

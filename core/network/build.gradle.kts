@@ -51,4 +51,10 @@ dependencies {
     implementation(libs.retrofit.kotlin.serialization)
 
     testImplementation(projects.core.testing)
+
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 }

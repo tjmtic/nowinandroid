@@ -52,4 +52,12 @@ enum class TopLevelDestination(
         iconTextId = interestsR.string.interests,
         titleTextId = interestsR.string.interests,
     ),
+    /*
+    SEARCH(
+        selectedIcon = NiaIcons.Grid3x3,
+        unselectedIcon = NiaIcons.Grid3x3,
+        iconTextId = interestsR.string.interests,
+        titleTextId = interestsR.string.interests,
+    ),
+     */
 }

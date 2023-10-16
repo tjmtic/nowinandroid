@@ -55,15 +55,38 @@ class OfflineFirstNewsRepository @Inject constructor(
 
     override fun getNewsResources(
         query: NewsResourceQuery,
-    ): Flow<List<NewsResource>> = newsResourceDao.getNewsResources(
-        useFilterTopicIds = query.filterTopicIds != null,
-        filterTopicIds = query.filterTopicIds ?: emptySet(),
-        useFilterNewsIds = query.filterNewsIds != null,
-        filterNewsIds = query.filterNewsIds ?: emptySet(),
-    )
-        .map { it.map(PopulatedNewsResource::asExternalModel) }
+    ): Flow<List<NewsResource>> {
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW NEWS RESOURCE DFAO")
+        return newsResourceDao.getNewsResources(
+            useFilterTopicIds = query.filterTopicIds != null,
+            filterTopicIds = query.filterTopicIds ?: emptySet(),
+            useFilterNewsIds = query.filterNewsIds != null,
+            filterNewsIds = query.filterNewsIds ?: emptySet(),
+        )
+            .map { it.map(PopulatedNewsResource::asExternalModel) }
+    }
 
     override suspend fun syncWith(synchronizer: Synchronizer): Boolean {
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
+        println("SYNCONG SYNGONG SYNGOING")
         var isFirstSync = false
         return synchronizer.changeListSync(
             versionReader = ChangeListVersions::newsResourceVersion,
@@ -81,14 +104,28 @@ class OfflineFirstNewsRepository @Inject constructor(
                 val followedTopicIds = userData.followedTopics
 
                 val existingNewsResourceIdsThatHaveChanged = when {
-                    hasOnboarded -> newsResourceDao.getNewsResourceIds(
+                    hasOnboarded -> {
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW")
+                        println("GETTING NEWS RESOURCEW HAS ONBOARD getNewsResourceIds")
+
+                        newsResourceDao.getNewsResourceIds(
                         useFilterTopicIds = true,
                         filterTopicIds = followedTopicIds,
                         useFilterNewsIds = true,
                         filterNewsIds = changedIds.toSet(),
                     )
                         .first()
-                        .toSet()
+                        .toSet() }
                     // No need to retrieve anything if notifications won't be sent
                     else -> emptySet()
                 }

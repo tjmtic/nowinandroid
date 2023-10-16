@@ -28,6 +28,7 @@ class FirebaseSyncSubscriber @Inject constructor(
     private val firebaseMessaging: FirebaseMessaging,
 ) : SyncSubscriber {
     override suspend fun subscribe() {
+        println("FIREBSAE SUBSCRIBEEEEEEEEEEEEEEEEEE")
         firebaseMessaging
             .subscribeToTopic(SYNC_TOPIC)
             .await()

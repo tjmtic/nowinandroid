@@ -195,7 +195,7 @@ private fun BookmarksGrid(
                 feedState = feedState,
                 onNewsResourcesCheckedChanged = { id, _ -> removeFromBookmarks(id) },
                 onNewsResourceViewed = onNewsResourceViewed,
-                onTopicClick = onTopicClick,
+                onTopicClick = onTopicClick
             )
             item(span = StaggeredGridItemSpan.FullLine) {
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))

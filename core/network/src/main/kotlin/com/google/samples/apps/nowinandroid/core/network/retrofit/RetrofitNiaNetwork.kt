@@ -85,15 +85,67 @@ class RetrofitNiaNetwork @Inject constructor(
         .build()
         .create(RetrofitNiaNetworkApi::class.java)
 
-    override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> =
-        networkApi.getTopics(ids = ids).data
+    override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> {
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW TOPIC TIPCOFD")
+        return networkApi.getTopics(ids = ids).data
+    }
 
-    override suspend fun getNewsResources(ids: List<String>?): List<NetworkNewsResource> =
-        networkApi.getNewsResources(ids = ids).data
+    override suspend fun getNewsResources(ids: List<String>?): List<NetworkNewsResource> {
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        return networkApi.getNewsResources(ids = ids).data
+    }
 
-    override suspend fun getTopicChangeList(after: Int?): List<NetworkChangeList> =
-        networkApi.getTopicChangeList(after = after)
+    override suspend fun getTopicChangeList(after: Int?): List<NetworkChangeList> {
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW TOPIC TIPCOFD CHANGLE LIST")
+        return networkApi.getTopicChangeList(after = after)
+    }
 
-    override suspend fun getNewsResourceChangeList(after: Int?): List<NetworkChangeList> =
-        networkApi.getNewsResourcesChangeList(after = after)
+    override suspend fun getNewsResourceChangeList(after: Int?): List<NetworkChangeList> {
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW")
+        println("GETTING NEWS RESOURCEW NETWORK CHANGE LIST")
+        return networkApi.getNewsResourcesChangeList(after = after)
+    }
 }

@@ -94,6 +94,7 @@ class NiaAppState(
             forYouNavigationRoute -> FOR_YOU
             bookmarksRoute -> BOOKMARKS
             interestsRoute -> INTERESTS
+            //searchRoute -> SEARCH
             else -> null
         }
 
@@ -116,6 +117,11 @@ class NiaAppState(
      * route.
      */
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
+    /**
+     * Map of top level destinations to be used in the TopBar, BottomBar and NavRail. The key is the
+     * route.
+     */
+    val topLevelDestinationsMain: List<TopLevelDestination> = topLevelDestinations.dropLast(1)
 
     /**
      * The top level destinations that have unread news resources.
@@ -160,6 +166,7 @@ class NiaAppState(
                 FOR_YOU -> navController.navigateToForYou(topLevelNavOptions)
                 BOOKMARKS -> navController.navigateToBookmarks(topLevelNavOptions)
                 INTERESTS -> navController.navigateToInterestsGraph(topLevelNavOptions)
+                //SEARCH - > navController.navigateToSearch()
             }
         }
     }

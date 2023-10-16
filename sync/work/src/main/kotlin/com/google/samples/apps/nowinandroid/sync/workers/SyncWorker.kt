@@ -69,6 +69,15 @@ class SyncWorker @AssistedInject constructor(
 
             syncSubscriber.subscribe()
 
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+            println("DO WORK SYNC TOPIC")
+
             // First sync the repositories in parallel
             val syncedSuccessfully = awaitAll(
                 async { topicRepository.sync() },
