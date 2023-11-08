@@ -20,5 +20,5 @@ plugins {
     alias(libs.plugins.nowinandroid.android.library.jacoco)
 }
 android {
-    namespace = "com.google.samples.apps.nowinandroid.feature.interests"
+    namespace = "com.google.samples.apps.nowinandroidnews.feature.interests"
 }

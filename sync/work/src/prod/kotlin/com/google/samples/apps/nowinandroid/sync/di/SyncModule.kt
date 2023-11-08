@@ -19,10 +19,10 @@ package com.google.samples.apps.nowinandroid.sync.di
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
-import com.google.samples.apps.nowinandroid.core.data.util.SyncManager
-import com.google.samples.apps.nowinandroid.sync.status.FirebaseSyncSubscriber
-import com.google.samples.apps.nowinandroid.sync.status.SyncSubscriber
-import com.google.samples.apps.nowinandroid.sync.status.WorkManagerSyncManager
+import com.google.samples.apps.nowinandroidnews.core.data.util.SyncManager
+import com.google.samples.apps.nowinandroidnews.sync.status.FirebaseSyncSubscriber
+import com.google.samples.apps.nowinandroidnews.sync.status.SyncSubscriber
+import com.google.samples.apps.nowinandroidnews.sync.status.WorkManagerSyncManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

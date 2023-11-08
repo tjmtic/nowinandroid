@@ -20,7 +20,7 @@ plugins {
 }
 
 android {
-    namespace = "com.google.samples.apps.nowinandroid.core.notifications"
+    namespace = "com.google.samples.apps.nowinandroidnews.core.notifications"
 }
 
 dependencies {

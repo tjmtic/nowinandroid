@@ -20,7 +20,7 @@ plugins {
 }
 
 android {
-    namespace = "com.google.samples.apps.nowinandroid.core.common"
+    namespace = "com.google.samples.apps.nowinandroidnews.core.common"
 }
 
 dependencies {

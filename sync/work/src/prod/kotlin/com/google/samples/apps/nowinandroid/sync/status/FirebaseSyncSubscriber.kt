@@ -17,7 +17,7 @@
 package com.google.samples.apps.nowinandroid.sync.status
 
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.samples.apps.nowinandroid.sync.initializers.SYNC_TOPIC
+import com.google.samples.apps.nowinandroidnews.sync.initializers.SYNC_TOPIC
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

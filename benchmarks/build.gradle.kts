@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.google.samples.apps.nowinandroid.NiaBuildType
-import com.google.samples.apps.nowinandroid.configureFlavors
+import com.google.samples.apps.nowinandroidnews.NiaBuildType
+import com.google.samples.apps.nowinandroidnews.configureFlavors
 
 plugins {
     alias(libs.plugins.nowinandroid.android.test)
 }
 
 android {
-    namespace = "com.google.samples.apps.nowinandroid.benchmarks"
+    namespace = "com.google.samples.apps.nowinandroidnews.benchmarks"
 
     defaultConfig {
         minSdk = 28

@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.google.samples.apps.nowinandroid.core.data"
+    namespace = "com.google.samples.apps.nowinandroidnews.core.data"
     testOptions {
         unitTests {
             isIncludeAndroidResources = true

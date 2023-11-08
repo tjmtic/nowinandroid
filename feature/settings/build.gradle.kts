@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.google.samples.apps.nowinandroid.feature.settings"
+    namespace = "com.google.samples.apps.nowinandroidnews.feature.settings"
 }
 
 dependencies {
@@ -29,4 +29,5 @@ dependencies {
     implementation(libs.google.oss.licenses) {
         exclude(group = "androidx.appcompat")
     }
+    implementation("com.google.android.gms:play-services-auth:19.0.0")
 }

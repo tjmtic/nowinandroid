@@ -26,7 +26,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace = "com.google.samples.apps.nowinandroid.core.network"
+    namespace = "com.google.samples.apps.nowinandroidnews.core.network"
     testOptions {
         unitTests {
             isIncludeAndroidResources = true

@@ -15,10 +15,10 @@
  */
 
 import com.android.build.api.dsl.ApplicationExtension
-import com.google.samples.apps.nowinandroid.configureGradleManagedDevices
+import com.google.samples.apps.nowinandroidnews.configureGradleManagedDevices
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.google.samples.apps.nowinandroid.configureKotlinAndroid
-import com.google.samples.apps.nowinandroid.configurePrintApksTask
+import com.google.samples.apps.nowinandroidnews.configureKotlinAndroid
+import com.google.samples.apps.nowinandroidnews.configurePrintApksTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure

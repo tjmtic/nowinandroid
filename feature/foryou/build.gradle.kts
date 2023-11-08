@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.google.samples.apps.nowinandroid.feature.foryou"
+    namespace = "com.google.samples.apps.nowinandroidnews.feature.foryou"
 }
 
 dependencies {

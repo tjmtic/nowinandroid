@@ -23,7 +23,7 @@ android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    namespace = "com.google.samples.apps.nowinandroid.core.ui"
+    namespace = "com.google.samples.apps.nowinandroidnews.core.ui"
 }
 
 dependencies {

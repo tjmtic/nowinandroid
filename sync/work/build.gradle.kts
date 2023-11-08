@@ -21,9 +21,9 @@ plugins {
 
 android {
     defaultConfig {
-        testInstrumentationRunner = "com.google.samples.apps.nowinandroid.core.testing.NiaTestRunner"
+        testInstrumentationRunner = "com.google.samples.apps.nowinandroidnews.core.testing.NiaTestRunner"
     }
-    namespace = "com.google.samples.apps.nowinandroid.sync"
+    namespace = "com.google.samples.apps.nowinandroidnews.sync"
 }
 
 dependencies {
