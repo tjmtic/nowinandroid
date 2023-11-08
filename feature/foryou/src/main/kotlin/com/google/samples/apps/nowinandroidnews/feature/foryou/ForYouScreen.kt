@@ -16,10 +16,15 @@
 
 package com.google.samples.apps.nowinandroidnews.feature.foryou
 
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.widget.Toast
 import androidx.activity.compose.ReportDrawnWhen
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -59,6 +64,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -87,6 +93,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus.Denied
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.samples.apps.nowinandroidnews.core.designsystem.component.DynamicAsyncImage
 import com.google.samples.apps.nowinandroidnews.core.designsystem.component.NiaButton
 import com.google.samples.apps.nowinandroidnews.core.designsystem.component.NiaIconToggleButton
@@ -200,6 +213,57 @@ internal fun ForYouScreen(
                 onTopicClick = onTopicClick,
             )
 
+            item{
+                val context = LocalContext.current
+
+                val signInLauncher = rememberLauncherForActivityResult(StartActivityForResult()) { result ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val data: Intent? = result.data
+                        //handleSignInResult(data)
+
+                        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                        try {
+                            val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
+
+                            // You can use account information here
+                            val email = account.email
+                            val idToken = account.idToken
+
+                            // ...
+                            println("TIME123 Google SIGNING SUCCESS!!!! with ${email} and ${idToken}")
+                            // If you want to navigate to another screen, you can do it here
+                            // Example using navigation component
+                            // navController.navigate("destination_route")
+                            val credential = GoogleAuthProvider.getCredential(idToken, null)
+                            Firebase.auth.signInWithCredential(credential)
+
+
+                        } catch (e: ApiException) {
+                            //googleSignInFailure()
+                            println("GOogle SIgning Failure")
+                        }
+                    } else {
+                        // Handle sign-in failure here
+                       // googleSignInFailure()
+
+                        //  }
+                    }
+                }
+
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken("309916318384-t8bc1g1s6ehjnm6qnfv4vmqvboi020g4.apps.googleusercontent.com")
+                    .requestEmail()
+                    .build()
+                val signInClient = GoogleSignIn.getClient(LocalContext.current, gso)
+                val signInIntent: Intent = signInClient.signInIntent
+
+                Column {
+                    Button(onClick = { signInLauncher.launch(signInIntent) }) {
+                        Text("Sign In with Google")
+                    }
+                }
+            }
+
             item(span = StaggeredGridItemSpan.FullLine, contentType = "bottomSpacing") {
                 Column {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -252,6 +316,8 @@ internal fun ForYouScreen(
         onDeepLinkOpened,
     )
 }
+
+
 
 /**
  * An extension on [LazyListScope] defining the onboarding portion of the for you screen.

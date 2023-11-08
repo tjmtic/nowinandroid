@@ -28,4 +28,8 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.activity.compose)
     implementation(libs.accompanist.permissions)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.common.ktx)
+    implementation("com.google.android.gms:play-services-auth:19.0.0")
 }

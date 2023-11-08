@@ -16,9 +16,16 @@
 
 package com.google.samples.apps.nowinandroidnews.feature.foryou
 
+import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.auth.ktx.auth
 import com.google.samples.apps.nowinandroidnews.core.analytics.AnalyticsEvent
 import com.google.samples.apps.nowinandroidnews.core.analytics.AnalyticsEvent.Param
 import com.google.samples.apps.nowinandroidnews.core.analytics.AnalyticsHelper
@@ -31,8 +38,10 @@ import com.google.samples.apps.nowinandroidnews.core.ui.NewsFeedUiState
 import com.google.samples.apps.nowinandroidnews.feature.foryou.navigation.LINKED_NEWS_RESOURCE_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -50,6 +59,15 @@ class ForYouViewModel @Inject constructor(
     userNewsResourceRepository: UserNewsResourceRepository,
     getFollowableTopics: GetFollowableTopicsUseCase,
 ) : ViewModel() {
+
+    private var auth: FirebaseAuth
+
+    init {
+        println("TIME123 ForYouViewModel Init Start")
+        auth = Firebase.auth
+        val user = auth.currentUser
+        println("TIME123 ForYouViewModel User: ${user?.email}")
+    }
 
     private val shouldShowOnboarding: Flow<Boolean> =
         userDataRepository.userData.map { !it.shouldHideOnboarding }
@@ -109,13 +127,31 @@ class ForYouViewModel @Inject constructor(
                 initialValue = OnboardingUiState.Loading,
             )
 
-    fun updateTopicSelection(topicId: String, isChecked: Boolean) {
-        viewModelScope.launch {
-            userDataRepository.setTopicIdFollowed(topicId, isChecked)
+
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(null)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
+
+    init {
+        // Initialize Firebase and set up authentication listeners
+        Firebase.auth.addAuthStateListener { auth ->
+            _currentUser.value = auth.currentUser
         }
     }
 
+
+    fun updateTopicSelection(topicId: String, isChecked: Boolean) {
+
+
+
+        println("TIME123 ForYouViewModel User: ${currentUser.value?.email}")
+        viewModelScope.launch {
+            userDataRepository.setTopicIdFollowed(topicId, isChecked)
+        }
+
+    }
+
     fun updateNewsResourceSaved(newsResourceId: String, isChecked: Boolean) {
+
         viewModelScope.launch {
             userDataRepository.updateNewsResourceBookmark(newsResourceId, isChecked)
         }
