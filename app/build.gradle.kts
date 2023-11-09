@@ -123,6 +123,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation("com.google.android.gms:play-services-auth:19.0.0")
 
+    implementation("com.google.android.gms:play-services-ads:22.5.0")
+
     // Core functions
     testImplementation(projects.core.testing)
     testImplementation(projects.core.datastoreTest)

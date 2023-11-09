@@ -18,14 +18,19 @@ package com.google.samples.apps.nowinandroidnews.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.samples.apps.nowinandroidnews.core.data.repository.UserDataRepository
 import com.google.samples.apps.nowinandroidnews.core.model.data.DarkThemeConfig
 import com.google.samples.apps.nowinandroidnews.core.model.data.ThemeBrand
 import com.google.samples.apps.nowinandroidnews.feature.settings.SettingsUiState.Loading
 import com.google.samples.apps.nowinandroidnews.feature.settings.SettingsUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -35,6 +40,17 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
+
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(null)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
+
+    init {
+        // Initialize Firebase and set up authentication listeners
+        Firebase.auth.addAuthStateListener { auth ->
+            _currentUser.value = auth.currentUser
+        }
+    }
+
     val settingsUiState: StateFlow<SettingsUiState> =
         userDataRepository.userData
             .map { userData ->

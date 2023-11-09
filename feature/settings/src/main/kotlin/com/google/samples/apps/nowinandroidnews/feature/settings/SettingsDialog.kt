@@ -69,6 +69,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.samples.apps.nowinandroidnews.core.designsystem.component.NiaTextButton
 import com.google.samples.apps.nowinandroidnews.core.designsystem.theme.NiaTheme
 import com.google.samples.apps.nowinandroidnews.core.designsystem.theme.supportsDynamicTheming
@@ -90,9 +94,11 @@ fun SettingsDialog(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
+    val settingsUser by viewModel.currentUser.collectAsStateWithLifecycle()
     SettingsDialog(
         onDismiss = onDismiss,
         settingsUiState = settingsUiState,
+        settingsUser = settingsUser,
         onChangeThemeBrand = viewModel::updateThemeBrand,
         onChangeDynamicColorPreference = viewModel::updateDynamicColorPreference,
         onChangeDarkThemeConfig = viewModel::updateDarkThemeConfig,
@@ -102,6 +108,7 @@ fun SettingsDialog(
 @Composable
 fun SettingsDialog(
     settingsUiState: SettingsUiState,
+    settingsUser: FirebaseUser?,
     supportDynamicColor: Boolean = supportsDynamicTheming(),
     onDismiss: () -> Unit,
     onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
@@ -141,6 +148,7 @@ fun SettingsDialog(
                     is Success -> {
                         SettingsPanel(
                             settings = settingsUiState.settings,
+                            user = settingsUser,
                             supportDynamicColor = supportDynamicColor,
                             onChangeThemeBrand = onChangeThemeBrand,
                             onChangeDynamicColorPreference = onChangeDynamicColorPreference,
@@ -170,12 +178,51 @@ fun SettingsDialog(
 @Composable
 private fun ColumnScope.SettingsPanel(
     settings: UserEditableSettings,
+    user: FirebaseUser?,
     supportDynamicColor: Boolean,
     onChangeThemeBrand: (themeBrand: ThemeBrand) -> Unit,
     onChangeDynamicColorPreference: (useDynamicColor: Boolean) -> Unit,
     onChangeDarkThemeConfig: (darkThemeConfig: DarkThemeConfig) -> Unit,
 ) {
+    user?.let {
+        SettingsDialogSectionTitle(text = "Hello ${it.email}")
+
+        Column {
+            Button(onClick = { Firebase.auth.signOut()}) {
+                Text("Logout")
+            }
+        }
+
+    } ?: run {
+        val signInLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val data: Intent? = result.data
+                    handleSignInResult(data)
+                } else {
+                    // Handle sign-in failure here
+                    googleSignInFailure()
+
+                    //  }
+                }
+            }
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("309916318384-t8bc1g1s6ehjnm6qnfv4vmqvboi020g4.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+        val signInClient = GoogleSignIn.getClient(LocalContext.current, gso)
+        val signInIntent: Intent = signInClient.signInIntent
+
+        Column {
+            Button(onClick = { signInLauncher.launch(signInIntent) }) {
+                Text("Sign In with Google")
+            }
+        }
+    }
+
     SettingsDialogSectionTitle(text = stringResource(string.theme))
+
     Column(Modifier.selectableGroup()) {
         SettingsDialogThemeChooserRow(
             text = stringResource(string.brand_default),
@@ -223,31 +270,6 @@ private fun ColumnScope.SettingsPanel(
             onClick = { onChangeDarkThemeConfig(DARK) },
         )
     }
-
-    val signInLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data: Intent? = result.data
-            handleSignInResult(data)
-        } else {
-            // Handle sign-in failure here
-            googleSignInFailure()
-
-          //  }
-        }
-    }
-
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken("309916318384-t8bc1g1s6ehjnm6qnfv4vmqvboi020g4.apps.googleusercontent.com")
-        .requestEmail()
-        .build()
-    val signInClient = GoogleSignIn.getClient(LocalContext.current, gso)
-    val signInIntent: Intent = signInClient.signInIntent
-
-    Column {
-        Button(onClick = { signInLauncher.launch(signInIntent) }) {
-            Text("Sign In with Google")
-        }
-    }
 }
 
 fun googleSignInFailure(){
@@ -271,6 +293,15 @@ fun handleSignInResult(data: Intent?) {
         // If you want to navigate to another screen, you can do it here
         // Example using navigation component
         // navController.navigate("destination_route")
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        Firebase.auth.signInWithCredential(credential).addOnCompleteListener {
+            println("TIME123 Firebase Signing Complete")
+
+            when(task.isSuccessful){
+                true -> {println("TIME123 Firebase Signing Success!!")}
+                false -> {println("TIME123 Firebase Signing FAILURE")}
+            }
+        }
 
     } catch (e: ApiException) {
         googleSignInFailure()
@@ -362,6 +393,7 @@ private fun PreviewSettingsDialog() {
                     useDynamicColor = false,
                 ),
             ),
+            settingsUser = null,
             onChangeThemeBrand = {},
             onChangeDynamicColorPreference = {},
             onChangeDarkThemeConfig = {},
@@ -376,6 +408,7 @@ private fun PreviewSettingsDialogLoading() {
         SettingsDialog(
             onDismiss = {},
             settingsUiState = Loading,
+            settingsUser = null,
             onChangeThemeBrand = {},
             onChangeDynamicColorPreference = {},
             onChangeDarkThemeConfig = {},

@@ -32,4 +32,6 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.common.ktx)
     implementation("com.google.android.gms:play-services-auth:19.0.0")
+
+    implementation("com.google.android.gms:play-services-ads:22.5.0")
 }

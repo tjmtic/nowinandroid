@@ -88,11 +88,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.trace
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus.Denied
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -131,7 +135,7 @@ internal fun ForYouRoute(
     val deepLinkedUserNewsResource by viewModel.deepLinkedNewsResource.collectAsStateWithLifecycle()
 
     ForYouScreen(
-        isSyncing = false,//isSyncing,
+        isSyncing = isSyncing,
         onboardingUiState = onboardingUiState,
         feedState = feedState,
         deepLinkedUserNewsResource = deepLinkedUserNewsResource,
@@ -167,6 +171,12 @@ internal fun ForYouScreen(
 
     //println("$onboardingUiState $feedState $isSyncing")
 
+    //var adView = AdView(LocalContext.current)
+    //adView.setAdSize(AdSize.BANNER)
+    //adView.adSize = AdSize.BANNER
+
+    //adView.adUnitId = "ca-app-pub-7172893870367866/3730879950"
+
     val itemsAvailable = feedItemsSize(feedState, onboardingUiState)
 
     val state = rememberLazyStaggeredGridState()
@@ -179,6 +189,7 @@ internal fun ForYouScreen(
         modifier = modifier
             .fillMaxSize(),
     ) {
+
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Adaptive(300.dp),
             contentPadding = PaddingValues(16.dp),
@@ -206,63 +217,14 @@ internal fun ForYouScreen(
                 },
             )
 
+
+
             newsFeed(
                 feedState = feedState,
                 onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
                 onNewsResourceViewed = onNewsResourceViewed,
                 onTopicClick = onTopicClick,
             )
-
-            item{
-                val context = LocalContext.current
-
-                val signInLauncher = rememberLauncherForActivityResult(StartActivityForResult()) { result ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        val data: Intent? = result.data
-                        //handleSignInResult(data)
-
-                        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                        try {
-                            val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
-
-                            // You can use account information here
-                            val email = account.email
-                            val idToken = account.idToken
-
-                            // ...
-                            println("TIME123 Google SIGNING SUCCESS!!!! with ${email} and ${idToken}")
-                            // If you want to navigate to another screen, you can do it here
-                            // Example using navigation component
-                            // navController.navigate("destination_route")
-                            val credential = GoogleAuthProvider.getCredential(idToken, null)
-                            Firebase.auth.signInWithCredential(credential)
-
-
-                        } catch (e: ApiException) {
-                            //googleSignInFailure()
-                            println("GOogle SIgning Failure")
-                        }
-                    } else {
-                        // Handle sign-in failure here
-                       // googleSignInFailure()
-
-                        //  }
-                    }
-                }
-
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken("309916318384-t8bc1g1s6ehjnm6qnfv4vmqvboi020g4.apps.googleusercontent.com")
-                    .requestEmail()
-                    .build()
-                val signInClient = GoogleSignIn.getClient(LocalContext.current, gso)
-                val signInIntent: Intent = signInClient.signInIntent
-
-                Column {
-                    Button(onClick = { signInLauncher.launch(signInIntent) }) {
-                        Text("Sign In with Google")
-                    }
-                }
-            }
 
             item(span = StaggeredGridItemSpan.FullLine, contentType = "bottomSpacing") {
                 Column {
@@ -274,6 +236,8 @@ internal fun ForYouScreen(
                 }
             }
         }
+
+
         AnimatedVisibility(
             visible = isSyncing || isFeedLoading || isOnboardingLoading,
             enter = slideInVertically(
@@ -308,6 +272,15 @@ internal fun ForYouScreen(
                 itemsAvailable = itemsAvailable,
             ),
         )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
+            SimpleAdView()
+        }
+
     }
     TrackScreenViewEvent(screenName = "ForYou")
     NotificationPermissionEffect()
@@ -315,6 +288,8 @@ internal fun ForYouScreen(
         deepLinkedUserNewsResource,
         onDeepLinkOpened,
     )
+
+
 }
 
 
