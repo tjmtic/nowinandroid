@@ -26,7 +26,6 @@ import com.google.samples.apps.nowinandroidnews.core.network.model.NetworkTopic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.Instant.Companion
 import kotlinx.datetime.toInstant
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -45,6 +44,10 @@ import okhttp3.Request.Builder
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.use
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -84,12 +87,20 @@ class FakeNiaNetworkDataSource @Inject constructor(
             println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
             println("LOGGGING NEW CALL GET FIREBASBE BASE BASBE INFO DATATATATATAT!Q!!!!!!")
 
+            val timestamp = Clock.System.now().toEpochMilliseconds()
+
+            val dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
+            val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
+            val v1 = LocalDateTime.now().format(formatter)
+
+            val formattedDate = dateTime.format(formatter)
+
             val client = OkHttpClient().newBuilder()
                 .build()
             val mediaType: MediaType? = "text/plain".toMediaTypeOrNull()
             val body = RequestBody.create(mediaType, "")
             val request: Request = Builder()
-                .url("https://ax-code-cabin-default-rtdb.firebaseio.com/test/articles/bbc/x1696204934804/test.json")
+                .url("https://ax-code-cabin-default-rtdb.firebaseio.com/test/articles/${v1}/BBC.json")
                 .method("GET" ,null)
                 .build()
             val response: Response = client.newCall(request).execute()
@@ -114,45 +125,46 @@ class FakeNiaNetworkDataSource @Inject constructor(
             val respo = response.body
             val respoB = respo?.string()
 
-            println("TIME123 LOGGGING NEW CALL $respo $respoB")
+            println("TIME123 LOGGGING NEW CALL $v1 $respo $respoB" + "https://ax-code-cabin-default-rtdb.firebaseio.com/test/articles/${v1}/BBC.json")
 
 
-            convertToList(respoB!!)
+            convertToList(respoB!!).filterNotNull()
 
             //assets.open(NEWS_ASSET).use(networkJson::decodeFromStream)
         }
 
 
-    fun convertToList(raw:String): List<NetworkNewsResource>{
+    fun convertToList(raw:String): List<NetworkNewsResource?>{
 
 
         println("TIME123 Converting to list: $raw")
 
-        var responseList: List<NetworkNewsResource> = emptyList()
+        var responseList: List<NetworkNewsResource?> = emptyList()
         val obj = networkJson.decodeFromString<JsonArray>(raw)
 
        // val content = obj
 
-        responseList = obj.map{
+        responseList = obj.map {
             println("Object ENtry: ${it}")
             //it.jsonObject.entries
-                val id = it.jsonObject["title"].toString()
-                val content = it.jsonObject["content"]?.jsonPrimitive?.content
-                val headerImageUrl = it.jsonObject["headerImageUrl"]?.jsonPrimitive?.content?.split(" ")
-                    ?.get(0)
-                    //?.plus('"')
-                val publishDate = "2022-05-04T23:00:00Z".toInstant()/* it.jsonObject["publishDate"].toString()*/
-                val title = it.jsonObject["title"]?.jsonPrimitive?.content
-                val type = it.jsonObject["type"]?.jsonPrimitive?.content
-                val url = it.jsonObject["url"]?.jsonPrimitive?.content
+            val id = it.jsonObject["title"].toString()
+            val content = it.jsonObject["content"]?.jsonPrimitive?.content
+            val headerImageUrl = it.jsonObject["headerImageUrl"]?.jsonPrimitive?.content?.split(" ")
+                ?.get(0)
+            //?.plus('"')
+            val publishDate =
+                "2022-05-04T23:00:00Z".toInstant()/* it.jsonObject["publishDate"].toString()*/
+            val title = it.jsonObject["title"]?.jsonPrimitive?.content
+            val type = it.jsonObject["type"]?.jsonPrimitive?.content
+            val url = it.jsonObject["url"]?.jsonPrimitive?.content
 
-                val url1 = it.jsonObject["url"]?.jsonPrimitive
-                val url2 = it.jsonObject["url"].toString()
-                val url3 = it.jsonObject.get("url").toString()
-                val topics = listOf("21")
+            val url1 = it.jsonObject["url"]?.jsonPrimitive
+            val url2 = it.jsonObject["url"].toString()
+            val url3 = it.jsonObject.get("url").toString()
+            val topics = listOf("21")
 
-                println("MAking NEWS RESOURCE $id $title $url $type $headerImageUrl")
-                println("URLS: $url $url1 $url2 $url3")
+            println("MAking NEWS RESOURCE $id $title $url $type $headerImageUrl")
+            println("URLS: $url $url1 $url2 $url3")
 
             if (title != null && content != null && url != null && headerImageUrl != null && publishDate != null && type != null && topics != null) {
                 return@map NetworkNewsResource(
@@ -166,12 +178,9 @@ class FakeNiaNetworkDataSource @Inject constructor(
                     topics
                 )
             }
-            else{
-                return@map NetworkNewsResource("","","","","","2022-05-04T23:00:00Z".toInstant(),"", emptyList())
-            }
-            }
 
-
+            return@map null
+        }
 
         println("Made News Resources $responseList")
 
