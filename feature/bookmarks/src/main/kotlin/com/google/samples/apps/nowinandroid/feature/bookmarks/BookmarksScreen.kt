@@ -67,6 +67,8 @@ import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollba
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintTheme
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
+import com.google.samples.apps.nowinandroid.core.ui.ErrorHandler
+import com.google.samples.apps.nowinandroid.core.ui.HandledError
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState.Loading
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState.Success
@@ -79,6 +81,7 @@ import com.google.samples.apps.nowinandroid.core.ui.newsFeed
 internal fun BookmarksRoute(
     onTopicClick: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
+    errorHandler: ErrorHandler,
     modifier: Modifier = Modifier,
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
@@ -93,6 +96,7 @@ internal fun BookmarksRoute(
         shouldDisplayUndoBookmark = viewModel.shouldDisplayUndoBookmark,
         undoBookmarkRemoval = viewModel::undoBookmarkRemoval,
         clearUndoState = viewModel::clearUndoState,
+        errorHandler = errorHandler,
     )
 }
 
@@ -111,6 +115,7 @@ internal fun BookmarksScreen(
     shouldDisplayUndoBookmark: Boolean = false,
     undoBookmarkRemoval: () -> Unit = {},
     clearUndoState: () -> Unit = {},
+    errorHandler: ErrorHandler,
 ) {
     val bookmarkRemovedMessage = stringResource(id = R.string.feature_bookmarks_removed)
     val undoText = stringResource(id = R.string.feature_bookmarks_undo)
@@ -118,6 +123,7 @@ internal fun BookmarksScreen(
     LaunchedEffect(shouldDisplayUndoBookmark) {
         if (shouldDisplayUndoBookmark) {
             val snackBarResult = onShowSnackbar(bookmarkRemovedMessage, undoText)
+            errorHandler.handleError(HandledError.Default)
             if (snackBarResult) {
                 undoBookmarkRemoval()
             } else {

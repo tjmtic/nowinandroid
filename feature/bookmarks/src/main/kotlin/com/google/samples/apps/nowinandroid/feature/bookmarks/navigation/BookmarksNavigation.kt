@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.google.samples.apps.nowinandroid.core.ui.ErrorHandler
 import com.google.samples.apps.nowinandroid.feature.bookmarks.BookmarksRoute
 
 const val BOOKMARKS_ROUTE = "bookmarks_route"
@@ -29,8 +30,9 @@ fun NavController.navigateToBookmarks(navOptions: NavOptions) = navigate(BOOKMAR
 fun NavGraphBuilder.bookmarksScreen(
     onTopicClick: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
+    errorHandler: ErrorHandler
 ) {
     composable(route = BOOKMARKS_ROUTE) {
-        BookmarksRoute(onTopicClick, onShowSnackbar)
+        BookmarksRoute(onTopicClick, onShowSnackbar, errorHandler)
     }
 }
