@@ -65,6 +65,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.samples.apps.nowinandroid.R
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.MESSAGE
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.OFFLINE
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.UNKNOWN
 import com.google.samples.apps.nowinandroid.core.data.util.MessageDuration
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaGradientBackground
@@ -99,24 +102,31 @@ fun NiaApp(
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
 
-            val offlineMessage = stringResource(R.string.not_connected)
+            /*val offlineMessage = stringResource(R.string.not_connected)
             SideEffect {
                 appState.offlineMessage = offlineMessage
-            }
+            }*/
 
             val snackbarMessage by appState.snackbarMessage.collectAsStateWithLifecycle()
 
             LaunchedEffect(snackbarMessage) {
+
                 snackbarMessage?.let {
+                    val messageSk: Pair<String, SnackbarDuration> = when(it.type){
+                        OFFLINE -> { Pair(stringResource(R.string.not_connected), SnackbarDuration.Indefinite) }
+                        is MESSAGE -> { Pair(( it.type as MESSAGE).value, SnackbarDuration.Long) }
+                        UNKNOWN -> { Pair(stringResource(R.string.unknown_error), SnackbarDuration.Short) }
+                    }
+
                     val snackBarResult = snackbarHostState.showSnackbar(
-                        message = it.message,
+                        message = messageSk.first,
                         actionLabel = it.label,
-                        duration = snackbarDurationOf(it.duration),
+                        duration = messageSk.second,
                     ) == ActionPerformed
 
                     handleSnackbarResult(snackBarResult, it)
-                    // Remove Message from Queue
-                    appState.clearErrorMessage(it.id)
+                    // Remove Message from List
+                    appState.errorMonitor.clearErrorMessage(it.id)
                 }
             }
 

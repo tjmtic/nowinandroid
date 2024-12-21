@@ -23,7 +23,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -136,6 +135,7 @@ class MainActivity : ComponentActivity() {
             }
 
             val appState = rememberNiaAppState(
+                networkMonitor = networkMonitor,
                 errorMonitor = errorMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
                 timeZoneMonitor = timeZoneMonitor,
@@ -152,7 +152,7 @@ class MainActivity : ComponentActivity() {
                     androidTheme = shouldUseAndroidTheme(uiState),
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
-                    @OptIn(ExperimentalMaterial3AdaptiveApi::class)
+                   // @OptIn(ExperimentalMaterial3AdaptiveApi::class)
                     NiaApp(appState)
                 }
             }

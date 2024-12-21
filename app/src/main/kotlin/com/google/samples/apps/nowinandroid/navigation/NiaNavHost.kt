@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.bookmarksScreen
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.FOR_YOU_ROUTE
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.forYouScreen
@@ -51,13 +52,13 @@ fun NiaNavHost(
         forYouScreen(onTopicClick = navController::navigateToInterests)
         bookmarksScreen(
             onTopicClick = navController::navigateToInterests,
-            onShowSnackbar = { message, label, actionSuccess, actionFailure -> appState.addLongErrorMessage(error = message, label = label, successAction = actionSuccess, failureAction = actionFailure) },
+            onShowSnackbar = { message, label, actionSuccess, actionFailure -> appState.errorMonitor.addErrorMessage(type = ErrorType.MESSAGE(message), label = label, successAction = actionSuccess, failureAction = actionFailure) },
         )
         searchScreen(
             onBackClick = navController::popBackStack,
             onInterestsClick = { appState.navigateToTopLevelDestination(INTERESTS) },
             onTopicClick = navController::navigateToInterests,
-            errorHandler = { message -> appState.addShortErrorMessage(message) },
+            errorHandler = { message -> appState.errorMonitor.addErrorMessage(type = ErrorType.MESSAGE(message) )}
         )
         interestsListDetailScreen()
     }

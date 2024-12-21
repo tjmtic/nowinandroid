@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -31,6 +32,8 @@ import androidx.tracing.trace
 import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
+import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneMonitor
 import com.google.samples.apps.nowinandroid.core.ui.TrackDisposableJank
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.BOOKMARKS_ROUTE
@@ -44,15 +47,17 @@ import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.BOOKMARKS
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.FOR_YOU
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.INTERESTS
+import com.google.samples.apps.nowinandroidnews.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.datetime.TimeZone
+//import kotlinx.datetime.TimeZone
 
 @Composable
 fun rememberNiaAppState(
+    networkMonitor: NetworkMonitor,
     errorMonitor: ErrorMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
     timeZoneMonitor: TimeZoneMonitor,
@@ -70,6 +75,7 @@ fun rememberNiaAppState(
         NiaAppState(
             navController = navController,
             coroutineScope = coroutineScope,
+            networkMonitor = networkMonitor,
             errorMonitor = errorMonitor,
             userNewsResourceRepository = userNewsResourceRepository,
             timeZoneMonitor = timeZoneMonitor,
@@ -81,10 +87,11 @@ fun rememberNiaAppState(
 class NiaAppState(
     val navController: NavHostController,
     coroutineScope: CoroutineScope,
-    errorMonitor: ErrorMonitor,
+    networkMonitor: NetworkMonitor,
+    val errorMonitor: ErrorMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
     timeZoneMonitor: TimeZoneMonitor,
-) : ErrorMonitor by errorMonitor {
+) {
     val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
@@ -97,13 +104,27 @@ class NiaAppState(
             else -> null
         }
 
-    val isOfflineState: StateFlow<Boolean> = isOffline.stateIn(
+    //Monitoring Sources for Snackbar Messages
+    private val isOfflineState: StateFlow<Boolean> = networkMonitor.isOnline.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = false,
     )
 
-    val snackbarMessage: StateFlow<ErrorMessage?> = errorMessage.stateIn(
+    private val errorMessages: StateFlow<List<ErrorMessage?>> = errorMonitor.errorMessages.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList(),
+    )
+
+    val snackbarMessage: StateFlow<ErrorMessage?> = combine(isOfflineState, errorMessages){ offline, error ->
+        if(offline){
+            //Priority is given to Offline Error Message over others
+            ErrorMessage(type = ErrorType.OFFLINE)
+        }
+        else error.first()
+
+    }.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null,
@@ -136,7 +157,7 @@ class NiaAppState(
         .stateIn(
             coroutineScope,
             SharingStarted.WhileSubscribed(5_000),
-            TimeZone.currentSystemDefault(),
+            0//TimeZone.currentSystemDefault(),
         )
 
     /**
