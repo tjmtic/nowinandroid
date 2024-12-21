@@ -29,7 +29,7 @@ import com.google.samples.apps.nowinandroid.core.data.repository.UserDataReposit
 import com.google.samples.apps.nowinandroid.core.data.util.ConnectivityManagerNetworkMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
-import com.google.samples.apps.nowinandroid.core.data.util.SharedErrorMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.StateErrorMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneBroadcastMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneMonitor
 import dagger.Binds
@@ -76,6 +76,6 @@ abstract class DataModule {
 
     @Binds
     internal abstract fun bindsErrorMonitor(
-        errorMonitor: SharedErrorMonitor,
+        errorMonitor: StateErrorMonitor,
     ): ErrorMonitor
 }
