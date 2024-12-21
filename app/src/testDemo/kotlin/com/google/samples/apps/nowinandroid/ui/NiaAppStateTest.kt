@@ -196,11 +196,11 @@ class NiaAppStateTest {
 
         val id = state.errorMonitor.addErrorMessage(ErrorType.MESSAGE("Test Error Message 1"))
 
-        backgroundScope.launch { state.snackbarMessage.collect() }
+        backgroundScope.launch { state.stateMessage.collect() }
 
         assertEquals(
             id,
-            state.snackbarMessage.value?.id,
+            state.stateMessage.value?.id,
         )
     }
 }
