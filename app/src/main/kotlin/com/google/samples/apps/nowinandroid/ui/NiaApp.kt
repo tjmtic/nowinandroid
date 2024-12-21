@@ -38,7 +38,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -62,6 +61,7 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.samples.apps.nowinandroid.R
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
@@ -79,9 +79,9 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradien
 import com.google.samples.apps.nowinandroid.feature.settings.SettingsDialog
 import com.google.samples.apps.nowinandroid.navigation.NiaNavHost
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
+import kotlin.reflect.KClass
 import com.google.samples.apps.nowinandroid.feature.settings.R as settingsR
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun NiaApp(
     appState: NiaAppState,
@@ -146,7 +146,6 @@ fun NiaApp(
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalComposeUiApi::class,
-    ExperimentalMaterial3AdaptiveApi::class,
 )
 internal fun NiaApp(
     appState: NiaAppState,
@@ -172,7 +171,7 @@ internal fun NiaApp(
             appState.topLevelDestinations.forEach { destination ->
                 val hasUnread = unreadDestinations.contains(destination)
                 val selected = currentDestination
-                    .isTopLevelDestinationInHierarchy(destination)
+                    .isRouteInHierarchy(destination.baseRoute)
                 item(
                     selected = selected,
                     onClick = { appState.navigateToTopLevelDestination(destination) },
@@ -220,8 +219,10 @@ internal fun NiaApp(
             ) {
                 // Show the top app bar on top level destinations.
                 val destination = appState.currentTopLevelDestination
-                val shouldShowTopAppBar = destination != null
+                var shouldShowTopAppBar = false
+
                 if (destination != null) {
+                    shouldShowTopAppBar = true
                     NiaTopAppBar(
                         titleRes = destination.titleTextId,
                         navigationIcon = NiaIcons.Search,
@@ -241,13 +242,14 @@ internal fun NiaApp(
                 }
 
                 Box(
-                    modifier = if (shouldShowTopAppBar) {
-                        Modifier.consumeWindowInsets(
-                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
-                        )
-                    } else {
-                        Modifier
-                    },
+                    // Workaround for https://issuetracker.google.com/338478720
+                    modifier = Modifier.consumeWindowInsets(
+                        if (shouldShowTopAppBar) {
+                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+                        } else {
+                            WindowInsets(0, 0, 0, 0)
+                        },
+                    ),
                 ) {
                     NiaNavHost(
                         appState = appState,
@@ -280,9 +282,9 @@ private fun Modifier.notificationDot(): Modifier =
         }
     }
 
-private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
+private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
+        it.hasRoute(route)
     } ?: false
 
 private fun snackbarDurationOf(duration: MessageDuration?): SnackbarDuration {
