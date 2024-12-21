@@ -30,39 +30,29 @@ import javax.inject.Inject
  * Interface implementation for handling general errors.
  */
 
-class SharedErrorMonitor() : ErrorMonitor {
+class SharedErrorMonitor @Inject constructor(): ErrorMonitor {
     /**
      * List of [ErrorMessage] to be shown to the user
      */
     override val errorMessages = MutableStateFlow<List<ErrorMessage>>(emptyList())
-
-    /*override val errorMessage: Flow<ErrorMessage?> = errorMessages.mapLatest { list ->
-        //No Priority Queueing
-        list.firstOrNull()
-    }*/
 
     /**
      * Creates an [ErrorMessage] from String value and adds it to the list.
      *
      * @param error: String value of the error message.
      *
-     * Returns the ID of the new [ErrorMessage] if success
+     * Returns the UUID of the new [ErrorMessage] if success
      * Returns null if [error] is Blank
      */
-    override fun addErrorMessage(type: ErrorType, //message: String?,
+    override fun addErrorMessage(type: ErrorType,
         label: String?,
-        //duration: MessageDuration?,
-       // priority: Int?,
         successAction: (() -> Unit)?,
         failureAction: (() -> Unit)?
     ): UUID {
 
         val newError = ErrorMessage(
-            type = type,
-               // message = message,
+                type = type,
                 label = label,
-                //duration = duration ?: Short,
-                //priority = priority ?: 0,
                 actionPerformed = successAction,
                 actionNotPerformed = failureAction
             )
@@ -80,7 +70,7 @@ class SharedErrorMonitor() : ErrorMonitor {
     }
 
     override fun clearMessages(){
-        errorMessages.update{ emptyList() }
+        errorMessages.update { emptyList() }
     }
 }
 
@@ -89,11 +79,8 @@ class SharedErrorMonitor() : ErrorMonitor {
  */
 data class ErrorMessage(
     val type: ErrorType,
-   // val message: String?,
     val id: UUID = UUID.randomUUID(),
     val label: String? = null,
-    //val duration: MessageDuration = Short,
-    //val priority: Int = 0,
     val actionPerformed: (() -> Unit)? = null,
     val actionNotPerformed: (() -> Unit)? = null,
 )

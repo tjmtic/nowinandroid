@@ -15,9 +15,8 @@
  */
 
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
-import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
-import com.google.samples.apps.nowinandroid.core.data.util.SnackbarErrorMonitor
-import com.google.samples.apps.nowinandroid.core.testing.util.TestNetworkMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
+import com.google.samples.apps.nowinandroid.core.data.util.SharedErrorMonitor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -32,59 +31,58 @@ import kotlin.test.assertEquals
 
 class SnackbarErrorMonitorTest {
 
-    lateinit var networkMonitor: NetworkMonitor
 
     // Subject under test.
-    private lateinit var state: SnackbarErrorMonitor
+    private lateinit var state: SharedErrorMonitor
 
-    private var message: ErrorMessage? = null
+    private lateinit var messages: List<ErrorMessage?>
 
     @Before
     fun setup() {
-        networkMonitor = TestNetworkMonitor()
-        state = SnackbarErrorMonitor(networkMonitor)
+        state = SharedErrorMonitor()
+        messages = emptyList()
     }
 
     @Test
     fun whenErrorIsNotAdded_NullIsPresent() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { state.errorMessage.collect() }
+        backgroundScope.launch { state.errorMessages.collect() }
         assertEquals(
-            null,
-            message,
+            emptyList(),
+            messages,
         )
     }
 
     @Test
     fun whenErrorIsAdded_ErrorMessageIsPresent() = runTest(UnconfinedTestDispatcher()) {
         backgroundScope.launch {
-            state.errorMessage.collect {
-                message = it
+            state.errorMessages.collect {
+                messages = it
             }
         }
 
-        val id = state.addShortErrorMessage("Test Error Message")
+        val id = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message"))
 
         assertEquals(
             id,
-            message?.id,
+            messages.firstOrNull()?.id,
         )
     }
 
     @Test
     fun whenErrorsAreAdded_FirstErrorMessageIsPresent() =
         runTest(UnconfinedTestDispatcher()) {
-            val id1 = state.addShortErrorMessage("Test Error Message 1")
-            state.addShortErrorMessage("Test Error Message 2")
+            val id1 = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 1"))
+            state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 2"))
 
             backgroundScope.launch {
-                state.errorMessage.collect {
-                    message = it
+                state.errorMessages.collect {
+                    messages = it
                 }
             }
 
             assertEquals(
                 id1,
-                message?.id,
+                messages.firstOrNull()?.id,
             )
         }
 
@@ -92,36 +90,35 @@ class SnackbarErrorMonitorTest {
     fun whenErrorIsCleared_ErrorMessageIsNotPresent() =
         runTest(UnconfinedTestDispatcher()) {
             backgroundScope.launch {
-                state.errorMessage.collect {
-                    message = it
+                state.errorMessages.collect {
+                    messages = it
                 }
             }
-            val id = state.addShortErrorMessage("Test Error Message 1")
-            if (id != null) {
-                state.clearErrorMessage(id)
-                assertEquals(
-                    null,
-                    message,
-                )
-            }
+            val id = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message"))
+            state.clearErrorMessage(id)
+
+            assertEquals(
+                emptyList(),
+                messages,
+            )
         }
 
     @Test
     fun whenErrorsAreCleared_NextErrorMessageIsPresent() =
         runTest(UnconfinedTestDispatcher()) {
             backgroundScope.launch {
-                state.errorMessage.collect {
-                    message = it
+                state.errorMessages.collect {
+                    messages = it
                 }
             }
-            val id1 = state.addShortErrorMessage("Test Error Message 1")
-            val id2 = state.addShortErrorMessage("Test Error Message 2")
-            if (id1 != null) {
-                state.clearErrorMessage(id1)
-                assertEquals(
+            val id1 = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 1"))
+            val id2 = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 2"))
+
+            state.clearErrorMessage(id1)
+
+            assertEquals(
                     id2,
-                    message?.id,
+                    messages.firstOrNull()?.id,
                 )
-            }
         }
 }

@@ -46,12 +46,13 @@ import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.BOOKMARKS
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.FOR_YOU
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.INTERESTS
-import com.google.samples.apps.nowinandroidnews.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.datetime.TimeZone
+
 //import kotlinx.datetime.TimeZone
 
 @Composable
@@ -115,7 +116,7 @@ class NiaAppState(
         }
 
     //Monitoring Sources for Snackbar Messages
-    private val isOfflineState: StateFlow<Boolean> = networkMonitor.isOnline.stateIn(
+    val isOfflineState: StateFlow<Boolean> = networkMonitor.isOnline.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = false,
@@ -127,12 +128,13 @@ class NiaAppState(
         initialValue = emptyList(),
     )
 
-    val snackbarMessage: StateFlow<ErrorMessage?> = combine(isOfflineState, errorMessages){ offline, error ->
+    val snackbarMessage: StateFlow<ErrorMessage?> = combine(isOfflineState, errorMessages){ offline, errors ->
         if(offline){
             //Priority is given to Offline Error Message over others
             ErrorMessage(type = ErrorType.OFFLINE)
         }
-        else error.first()
+        //Display a single message
+        else errors.first()
 
     }.stateIn(
         scope = coroutineScope,
@@ -167,7 +169,7 @@ class NiaAppState(
         .stateIn(
             coroutineScope,
             SharingStarted.WhileSubscribed(5_000),
-            0//TimeZone.currentSystemDefault(),
+            TimeZone.currentSystemDefault(),
         )
 
     /**

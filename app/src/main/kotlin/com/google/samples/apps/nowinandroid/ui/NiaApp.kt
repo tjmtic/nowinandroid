@@ -68,7 +68,6 @@ import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.MESSAGE
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.OFFLINE
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.UNKNOWN
-import com.google.samples.apps.nowinandroid.core.data.util.MessageDuration
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaGradientBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaNavigationSuiteScaffold
@@ -111,22 +110,24 @@ fun NiaApp(
 
             LaunchedEffect(snackbarMessage) {
 
-                snackbarMessage?.let {
-                    val messageSk: Pair<String, SnackbarDuration> = when(it.type){
-                        OFFLINE -> { Pair(stringResource(R.string.not_connected), SnackbarDuration.Indefinite) }
-                        is MESSAGE -> { Pair(( it.type as MESSAGE).value, SnackbarDuration.Long) }
-                        UNKNOWN -> { Pair(stringResource(R.string.unknown_error), SnackbarDuration.Short) }
-                    }
+                snackbarMessage?.let { message ->
+                    val messageSk: Pair<String, SnackbarDuration> =
+                                    when(message.type){
+                                        OFFLINE -> { Pair("stringResource(R.string.not_connected)", SnackbarDuration.Indefinite) }
+                                        is MESSAGE -> { Pair(( message.type as MESSAGE).value, SnackbarDuration.Long) }
+                                        UNKNOWN -> { Pair("stringResource(R.string.unknown_error)", SnackbarDuration.Short) }
+                                    }
 
-                    val snackBarResult = snackbarHostState.showSnackbar(
-                        message = messageSk.first,
-                        actionLabel = it.label,
-                        duration = messageSk.second,
-                    ) == ActionPerformed
+                    handleSnackbarResult(message,
+                        snackbarHostState.showSnackbar(
+                                                message = messageSk.first,
+                                                actionLabel = message.label,
+                                                duration = messageSk.second,
+                                            ) == ActionPerformed
+                    )
 
-                    handleSnackbarResult(snackBarResult, it)
                     // Remove Message from List
-                    appState.errorMonitor.clearErrorMessage(it.id)
+                    appState.errorMonitor.clearErrorMessage(message.id)
                 }
             }
 
@@ -287,16 +288,8 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
         it.hasRoute(route)
     } ?: false
 
-private fun snackbarDurationOf(duration: MessageDuration?): SnackbarDuration {
-    return when (duration) {
-        MessageDuration.Short -> SnackbarDuration.Short
-        MessageDuration.Long -> SnackbarDuration.Long
-        MessageDuration.Indefinite -> SnackbarDuration.Indefinite
-        else -> SnackbarDuration.Short
-    }
-}
 
-private fun handleSnackbarResult(snackBarResult: Boolean, message: ErrorMessage) {
+private fun handleSnackbarResult(message: ErrorMessage, snackBarResult: Boolean) {
     if (snackBarResult) {
         message.actionPerformed?.invoke()
     } else {

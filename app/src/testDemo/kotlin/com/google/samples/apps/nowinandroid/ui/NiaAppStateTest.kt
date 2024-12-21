@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.createGraph
 import androidx.navigation.testing.TestNavHostController
 import com.google.samples.apps.nowinandroid.core.data.repository.CompositeUserNewsResourceRepository
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
 import com.google.samples.apps.nowinandroid.core.testing.repository.TestNewsRepository
 import com.google.samples.apps.nowinandroid.core.testing.repository.TestUserDataRepository
 import com.google.samples.apps.nowinandroid.core.testing.util.TestErrorMonitor
@@ -61,7 +62,7 @@ class NiaAppStateTest {
     // Create the test dependencies.
     private val networkMonitor = TestNetworkMonitor()
 
-    private val errorMonitor = TestErrorMonitor(networkMonitor)
+    private val errorMonitor = TestErrorMonitor()
 
     private val timeZoneMonitor = TestTimeZoneMonitor()
 
@@ -81,6 +82,7 @@ class NiaAppStateTest {
                 NiaAppState(
                     navController = navController,
                     coroutineScope = backgroundScope,
+                    networkMonitor = networkMonitor,
                     errorMonitor = errorMonitor,
                     userNewsResourceRepository = userNewsResourceRepository,
                     timeZoneMonitor = timeZoneMonitor,
@@ -103,6 +105,7 @@ class NiaAppStateTest {
     fun niaAppState_destinations() = runTest {
         composeTestRule.setContent {
             state = rememberNiaAppState(
+                networkMonitor = networkMonitor,
                 errorMonitor = errorMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
                 timeZoneMonitor = timeZoneMonitor,
@@ -121,6 +124,7 @@ class NiaAppStateTest {
             state = NiaAppState(
                 navController = NavHostController(LocalContext.current),
                 coroutineScope = backgroundScope,
+                networkMonitor = networkMonitor,
                 errorMonitor = errorMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
                 timeZoneMonitor = timeZoneMonitor,
@@ -141,6 +145,7 @@ class NiaAppStateTest {
             state = NiaAppState(
                 navController = NavHostController(LocalContext.current),
                 coroutineScope = backgroundScope,
+                networkMonitor = networkMonitor,
                 errorMonitor = errorMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
                 timeZoneMonitor = timeZoneMonitor,
@@ -161,6 +166,7 @@ class NiaAppStateTest {
             state = NiaAppState(
                 navController = NavHostController(LocalContext.current),
                 coroutineScope = backgroundScope,
+                networkMonitor = networkMonitor,
                 errorMonitor = errorMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
                 timeZoneMonitor = timeZoneMonitor,
@@ -181,13 +187,14 @@ class NiaAppStateTest {
             state = NiaAppState(
                 navController = NavHostController(LocalContext.current),
                 coroutineScope = backgroundScope,
+                networkMonitor = networkMonitor,
                 errorMonitor = errorMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
                 timeZoneMonitor = timeZoneMonitor,
             )
         }
 
-        val id = state.addShortErrorMessage("Test Error Message 1")
+        val id = state.errorMonitor.addErrorMessage(ErrorType.MESSAGE("Test Error Message 1"))
 
         backgroundScope.launch { state.snackbarMessage.collect() }
 

@@ -18,46 +18,31 @@ package com.google.samples.apps.nowinandroid.core.data.test
 
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.util.UUID
 import javax.inject.Inject
 
 class FakeErrorMonitor @Inject constructor() : ErrorMonitor {
 
-    override var offlineMessage: String? = "offline"
-    override val isOffline: Flow<Boolean>
-        get() = flowOf(false)
-    override fun addShortErrorMessage(
-        error: String,
+    override fun addErrorMessage(
+        type: ErrorType,
         label: String?,
         successAction: (() -> Unit)?,
         failureAction: (() -> Unit)?,
-    ): String? {
-        return "1"
+    ): UUID? {
+        return UUID.randomUUID()
     }
 
-    override fun addLongErrorMessage(
-        error: String,
-        label: String?,
-        successAction: (() -> Unit)?,
-        failureAction: (() -> Unit)?,
-    ): String? {
-        return "2"
-    }
-
-    override fun addIndefiniteErrorMessage(
-        error: String,
-        label: String?,
-        successAction: (() -> Unit)?,
-        failureAction: (() -> Unit)?,
-    ): String? {
-        return "3"
-    }
-
-    override fun clearErrorMessage(id: String) {
+    override fun clearErrorMessage(id: UUID) {
         // Do nothing
     }
 
-    override val errorMessage: Flow<ErrorMessage?>
-        get() = flowOf(null)
+    override fun clearMessages() {
+        // Do nothing
+    }
+
+    override val errorMessages: Flow<List<ErrorMessage?>>
+        get() = flowOf(emptyList())
 }
