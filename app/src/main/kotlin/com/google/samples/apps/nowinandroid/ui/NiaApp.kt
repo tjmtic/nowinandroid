@@ -110,7 +110,7 @@ fun NiaApp(
             LaunchedEffect(stateMessage) {
 
                 stateMessage?.let { message ->
-                    
+
                     val snackBarMessage: SnackBarMessage = getSnackbarMessage(context, message)
 
                     //Determine whether user clicked action button

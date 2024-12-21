@@ -16,12 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.core.data.util
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import java.util.UUID
 import javax.inject.Inject
@@ -30,7 +25,7 @@ import javax.inject.Inject
  * Interface implementation for handling general errors.
  */
 
-class SharedErrorMonitor @Inject constructor(): ErrorMonitor {
+class StateErrorMonitor @Inject constructor(): ErrorMonitor {
     /**
      * List of [ErrorMessage] to be shown to the user
      */

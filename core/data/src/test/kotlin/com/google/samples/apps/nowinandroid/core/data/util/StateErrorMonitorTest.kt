@@ -16,7 +16,7 @@
 
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
-import com.google.samples.apps.nowinandroid.core.data.util.SharedErrorMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.StateErrorMonitor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -33,13 +33,13 @@ class SnackbarErrorMonitorTest {
 
 
     // Subject under test.
-    private lateinit var state: SharedErrorMonitor
+    private lateinit var state: StateErrorMonitor
 
     private lateinit var messages: List<ErrorMessage?>
 
     @Before
     fun setup() {
-        state = SharedErrorMonitor()
+        state = StateErrorMonitor()
         messages = emptyList()
     }
 
