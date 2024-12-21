@@ -46,15 +46,15 @@ class SharedErrorMonitor @Inject constructor(): ErrorMonitor {
      */
     override fun addErrorMessage(type: ErrorType,
         label: String?,
-        successAction: (() -> Unit)?,
-        failureAction: (() -> Unit)?
+        onConfirm: (() -> Unit)?,
+        onDelay: (() -> Unit)?
     ): UUID {
 
         val newError = ErrorMessage(
                 type = type,
                 label = label,
-                actionPerformed = successAction,
-                actionNotPerformed = failureAction
+                onConfirm = onConfirm,
+                onDelay = onDelay
             )
 
         errorMessages.update { it + newError }
@@ -81,6 +81,6 @@ data class ErrorMessage(
     val type: ErrorType,
     val id: UUID = UUID.randomUUID(),
     val label: String? = null,
-    val actionPerformed: (() -> Unit)? = null,
-    val actionNotPerformed: (() -> Unit)? = null,
+    val onConfirm: (() -> Unit)? = null,
+    val onDelay: (() -> Unit)? = null,
 )

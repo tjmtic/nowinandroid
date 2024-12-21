@@ -61,7 +61,7 @@ fun NiaNavHost(
         }
         bookmarksScreen(
             onTopicClick = navController::navigateToInterests,
-            onShowSnackbar = { message, label, actionSuccess, actionFailure -> appState.errorMonitor.addErrorMessage(type = ErrorType.MESSAGE(message), label = label, successAction = actionSuccess, failureAction = actionFailure) },
+            onShowSnackbar = { message, label, onConfirm, onDelay -> appState.errorMonitor.addErrorMessage(type = ErrorType.MESSAGE(message), label = label, onConfirm = onConfirm, onDelay = onDelay) },
         )
         searchScreen(
             onBackClick = navController::popBackStack,

@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -54,6 +55,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -101,30 +103,29 @@ fun NiaApp(
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
 
-            /*val offlineMessage = stringResource(R.string.not_connected)
-            SideEffect {
-                appState.offlineMessage = offlineMessage
-            }*/
+            val context = LocalContext.current
 
-            val snackbarMessage by appState.snackbarMessage.collectAsStateWithLifecycle()
+            val stateMessage by appState.stateMessage.collectAsStateWithLifecycle()
 
-            LaunchedEffect(snackbarMessage) {
+            LaunchedEffect(stateMessage) {
 
-                snackbarMessage?.let { message ->
-                    val messageSk: Pair<String, SnackbarDuration> =
-                                    when(message.type){
-                                        OFFLINE -> { Pair("stringResource(R.string.not_connected)", SnackbarDuration.Indefinite) }
-                                        is MESSAGE -> { Pair(( message.type as MESSAGE).value, SnackbarDuration.Long) }
-                                        UNKNOWN -> { Pair("stringResource(R.string.unknown_error)", SnackbarDuration.Short) }
-                                    }
+                stateMessage?.let { message ->
+                    
+                    val snackBarMessage: SnackBarMessage = getSnackbarMessage(context, message)
 
-                    handleSnackbarResult(message,
-                        snackbarHostState.showSnackbar(
-                                                message = messageSk.first,
-                                                actionLabel = message.label,
-                                                duration = messageSk.second,
+                    //Determine whether user clicked action button
+                    val snackBarResult = snackbarHostState.showSnackbar(
+                                                message = snackBarMessage.message,
+                                                actionLabel = snackBarMessage.label,
+                                                duration = snackBarMessage.duration,
                                             ) == ActionPerformed
-                    )
+
+                    //Handle result action
+                    if (snackBarResult) {
+                        snackBarMessage.onActionPerformed()
+                    } else {
+                        snackBarMessage.onActionNotPerformed()
+                    }
 
                     // Remove Message from List
                     appState.errorMonitor.clearErrorMessage(message.id)
@@ -289,10 +290,27 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     } ?: false
 
 
-private fun handleSnackbarResult(message: ErrorMessage, snackBarResult: Boolean) {
-    if (snackBarResult) {
-        message.actionPerformed?.invoke()
-    } else {
-        message.actionNotPerformed?.invoke()
+private fun getSnackbarMessage(context: Context, message: ErrorMessage): SnackBarMessage {
+    //Duration and Text values dictated by the UI layer
+    val (messageText, duration) = when (message.type) {
+        OFFLINE -> context.getString(R.string.not_connected) to SnackbarDuration.Indefinite
+        is MESSAGE -> (message.type as MESSAGE).value to SnackbarDuration.Long
+        UNKNOWN -> context.getString(R.string.unknown_error) to SnackbarDuration.Short
     }
+
+    return SnackBarMessage(
+        message = messageText,
+        duration = duration,
+        label = message.label,
+        onActionPerformed = message.onConfirm ?: {},
+        onActionNotPerformed = message.onDelay ?: {}
+    )
 }
+
+data class SnackBarMessage(
+    val message: String,
+    val duration: SnackbarDuration,
+    val label: String? = null,
+    val onActionPerformed: (() -> Unit),
+    val onActionNotPerformed: (() -> Unit),
+)

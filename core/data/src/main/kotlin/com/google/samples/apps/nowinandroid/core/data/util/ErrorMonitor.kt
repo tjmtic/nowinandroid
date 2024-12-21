@@ -25,8 +25,8 @@ import java.util.UUID
 interface ErrorMonitor {
     fun addErrorMessage(type: ErrorType,
         label: String? = null,
-        successAction: (() -> Unit)? = null,
-        failureAction: (() -> Unit)? = null)
+        onConfirm: (() -> Unit)? = null,
+        onDelay: (() -> Unit)? = null)
     : UUID?
 
     fun clearErrorMessage(id: UUID)

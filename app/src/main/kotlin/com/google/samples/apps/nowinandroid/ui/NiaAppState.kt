@@ -116,6 +116,7 @@ class NiaAppState(
         }
 
     //Monitoring Sources for Snackbar Messages
+    //TODO: isOfflineState = isOnline?
     val isOfflineState: StateFlow<Boolean> = networkMonitor.isOnline.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -128,9 +129,9 @@ class NiaAppState(
         initialValue = emptyList(),
     )
 
-    val snackbarMessage: StateFlow<ErrorMessage?> = combine(isOfflineState, errorMessages){ offline, errors ->
+    val stateMessage: StateFlow<ErrorMessage?> = combine(isOfflineState, errorMessages){ offline, errors ->
         if(offline){
-            //Priority is given to Offline Error Message over others
+            //Priority is given to Offline Error Message over other types
             ErrorMessage(type = ErrorType.OFFLINE)
         }
         //Display a single message
