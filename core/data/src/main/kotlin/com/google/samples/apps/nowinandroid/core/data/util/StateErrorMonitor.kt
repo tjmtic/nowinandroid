@@ -26,7 +26,7 @@ import javax.inject.Inject
  * Interface implementation for handling general errors.
  */
 
-class StateErrorMonitor @Inject constructor(): ErrorMonitor {
+class StateErrorMonitor @Inject constructor() : ErrorMonitor {
     /**
      * List of [MessageData] to be shown
      */
@@ -42,6 +42,7 @@ class StateErrorMonitor @Inject constructor(): ErrorMonitor {
 
         return data
     }
+
     /**
      * Add a [MessageData] to the list.
      * @param message: [MessageData] to add.
@@ -60,7 +61,7 @@ class StateErrorMonitor @Inject constructor(): ErrorMonitor {
     /**
      * Remove all from list, reset to empty list
      */
-    override fun clearAllMessages(){
+    override fun clearAllMessages() {
         messages.update { emptyList() }
     }
 }

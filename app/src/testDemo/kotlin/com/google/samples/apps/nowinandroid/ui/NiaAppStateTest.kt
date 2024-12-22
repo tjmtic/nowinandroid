@@ -130,11 +130,11 @@ class NiaAppStateTest {
             )
         }
 
-        backgroundScope.launch { state.isOfflineState.collect() }
+        backgroundScope.launch { state.isOffline.collect() }
         networkMonitor.setConnected(false)
         assertEquals(
             true,
-            state.isOfflineState.value,
+            state.isOffline.value,
         )
     }
 
@@ -151,11 +151,11 @@ class NiaAppStateTest {
             )
         }
 
-        backgroundScope.launch { state.isOfflineState.collect() }
+        backgroundScope.launch { state.isOffline.collect() }
         networkMonitor.setConnected(true)
         assertEquals(
             false,
-            state.isOfflineState.value,
+            state.isOffline.value,
         )
     }
 

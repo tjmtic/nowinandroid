@@ -18,7 +18,6 @@ package com.google.samples.apps.nowinandroid.core.data.util
 
 import com.google.samples.apps.nowinandroid.core.model.data.MessageData
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 /**
  * Interface for handling error messages.

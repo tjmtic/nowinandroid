@@ -121,11 +121,11 @@ internal fun BookmarksScreen(
         if (shouldDisplayUndoBookmark) {
             onShowSnackbar(
                 MessageData(
-                    type= MessageType.MESSAGE(bookmarkRemovedMessage),
+                    type = MessageType.MESSAGE(bookmarkRemovedMessage),
                     label = undoText,
                     onConfirm = { undoBookmarkRemoval() },
-                    onDelay = { clearUndoState() }
-                )
+                    onDelay = { clearUndoState() },
+                ),
             )
         }
     }

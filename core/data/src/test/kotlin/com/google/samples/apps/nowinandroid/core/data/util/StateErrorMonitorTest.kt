@@ -31,7 +31,6 @@ import kotlin.test.assertEquals
 
 class StateErrorMonitorTest {
 
-
     // Subject under test.
     private lateinit var state: StateErrorMonitor
 
@@ -49,9 +48,11 @@ class StateErrorMonitorTest {
 
     @Test
     fun whenErrorIsNotAdded_NullIsPresent() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { state.messages.collect{
-            messages = it
-        } }
+        backgroundScope.launch {
+            state.messages.collect {
+                messages = it
+            }
+        }
         assertEquals(
             emptyList(),
             messages,
@@ -93,7 +94,6 @@ class StateErrorMonitorTest {
     @Test
     fun whenErrorsAreAdded_FirstErrorMessageIsPresent() =
         runTest(UnconfinedTestDispatcher()) {
-
             state.addMessageByData(fakeData)
             state.addMessageByString(fakeString)
 
@@ -140,8 +140,8 @@ class StateErrorMonitorTest {
             state.clearMessage(fakeData)
 
             assertEquals(
-                    fakeData2,
-                    messages.firstOrNull(),
-                )
+                fakeData2,
+                messages.firstOrNull(),
+            )
         }
 }

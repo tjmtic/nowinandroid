@@ -60,13 +60,13 @@ fun NiaNavHost(
         }
         bookmarksScreen(
             onTopicClick = navController::navigateToInterests,
-            onShowSnackbar = appState.errorMonitor::addMessageByData
+            onShowSnackbar = appState.errorMonitor::addMessageByData,
         )
         searchScreen(
             onBackClick = navController::popBackStack,
             onInterestsClick = { appState.navigateToTopLevelDestination(INTERESTS) },
             onTopicClick = navController::navigateToInterests,
-            errorHandler = { message -> appState.errorMonitor.addMessageByString(message) }
+            errorHandler = { message -> appState.errorMonitor.addMessageByString(message) },
         )
         interestsListDetailScreen()
     }

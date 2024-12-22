@@ -22,7 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -50,10 +49,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.TimeZone
 
-//import kotlinx.datetime.TimeZone
+// import kotlinx.datetime.TimeZone
 
 @Composable
 fun rememberNiaAppState(
@@ -68,6 +68,7 @@ fun rememberNiaAppState(
     return remember(
         navController,
         coroutineScope,
+        networkMonitor,
         errorMonitor,
         userNewsResourceRepository,
         timeZoneMonitor,
@@ -115,13 +116,16 @@ class NiaAppState(
             }
         }
 
-    //Monitoring Sources for State Messages
-    //TODO: isOfflineState = isOnline?
-    val isOfflineState: StateFlow<Boolean> = networkMonitor.isOnline.stateIn(
-        scope = coroutineScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = false,
-    )
+    /**
+     * Monitoring Sources for State Messages
+     */
+    val isOffline: StateFlow<Boolean> = networkMonitor.isOnline
+        .map(Boolean::not)
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
 
     private val errorMessages: StateFlow<List<MessageData?>> = errorMonitor.messages.stateIn(
         scope = coroutineScope,
@@ -129,14 +133,15 @@ class NiaAppState(
         initialValue = emptyList(),
     )
 
-    val stateMessage: StateFlow<MessageData?> = combine(isOfflineState, errorMessages){ offline, errors ->
-        if(offline){
-            //Priority is given to Offline Error Message over other types
+    val stateMessage: StateFlow<MessageData?> = combine(isOffline, errorMessages) { offline, errors ->
+        if (offline) {
+            // Priority is given to Offline Error Message over other types
             MessageData(type = MessageType.OFFLINE)
         }
-        //Otherwise, Display first from error monitor list
-        else errors.first()
-
+        // Otherwise, Display first from error monitor list
+        else {
+            errors.first()
+        }
     }.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5_000),

@@ -16,13 +16,12 @@
 
 package com.google.samples.apps.nowinandroid.core.model.data
 
-
 data class MessageData(
-    //val id: UUID = UUID.randomUUID(),
+    // val id: UUID = UUID.randomUUID(),
     val type: MessageType,
     val label: String? = null,
     val onConfirm: (() -> Unit)? = null,
-    val onDelay: (() -> Unit)? = null
+    val onDelay: (() -> Unit)? = null,
 )
 
 /**
@@ -32,8 +31,8 @@ sealed class MessageType {
     data object OFFLINE : MessageType()
     data class MESSAGE(val value: String) : MessageType()
     data object UNKNOWN : MessageType()
-   // data class Error(val type: ErrorType) : MessageType()
-    //data class Data(val value: Any) : MessageType()
+    // data class Error(val type: ErrorType) : MessageType()
+    // data class Data(val value: Any) : MessageType()
 }
 /*
 sealed class ErrorType {

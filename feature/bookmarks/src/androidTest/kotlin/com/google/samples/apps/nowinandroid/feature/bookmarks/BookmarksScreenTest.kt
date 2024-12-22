@@ -117,7 +117,7 @@ class BookmarksScreenTest {
                 feedState = NewsFeedUiState.Success(
                     userNewsResourcesTestData.take(2),
                 ),
-                onShowSnackbar = {_ -> Unit },
+                onShowSnackbar = { _ -> Unit },
                 removeFromBookmarks = { newsResourceId ->
                     assertEquals(userNewsResourcesTestData[0].id, newsResourceId)
                     removeFromBookmarksCalled = true

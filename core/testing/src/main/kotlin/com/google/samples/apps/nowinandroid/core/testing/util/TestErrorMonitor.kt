@@ -28,7 +28,7 @@ class TestErrorMonitor() : ErrorMonitor {
     var count: Int = 0
 
     override fun addMessageByString(
-        message: String
+        message: String,
     ): MessageData {
         count += 1
         return testData
@@ -38,7 +38,6 @@ class TestErrorMonitor() : ErrorMonitor {
         count += 1
     }
 
-
     override fun clearMessage(message: MessageData) {
         count -= 1
     }
@@ -47,6 +46,5 @@ class TestErrorMonitor() : ErrorMonitor {
         count = 0
     }
 
-
-    override val messages: Flow<List<MessageData?>> = flowOf(List(count){testData})
+    override val messages: Flow<List<MessageData?>> = flowOf(List(count) { testData })
 }

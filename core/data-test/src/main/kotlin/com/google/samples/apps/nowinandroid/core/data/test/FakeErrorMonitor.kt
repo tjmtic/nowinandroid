@@ -33,15 +33,15 @@ class FakeErrorMonitor @Inject constructor() : ErrorMonitor {
     }
 
     override fun addMessageByData(message: MessageData) {
-        //Do Nothing
+        // Do Nothing
     }
 
     override fun clearMessage(message: MessageData) {
-        //Do Nothing
+        // Do Nothing
     }
 
     override fun clearAllMessages() {
-        //Do Nothing
+        // Do Nothing
     }
 
     override val messages: Flow<List<MessageData?>>

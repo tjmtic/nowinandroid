@@ -43,7 +43,6 @@ import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,8 +74,8 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColo
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
 import com.google.samples.apps.nowinandroid.core.model.data.MessageData
 import com.google.samples.apps.nowinandroid.core.model.data.MessageType.MESSAGE
-import com.google.samples.apps.nowinandroid.core.model.data.MessageType.UNKNOWN
 import com.google.samples.apps.nowinandroid.core.model.data.MessageType.OFFLINE
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType.UNKNOWN
 import com.google.samples.apps.nowinandroid.feature.settings.SettingsDialog
 import com.google.samples.apps.nowinandroid.navigation.NiaNavHost
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
@@ -108,19 +107,18 @@ fun NiaApp(
             val stateMessage by appState.stateMessage.collectAsStateWithLifecycle()
 
             LaunchedEffect(stateMessage) {
-
                 stateMessage?.let { message ->
 
                     val (text, duration) = getSnackbarValues(context, message)
 
-                    //Determine whether user clicked action button
+                    // Determine whether user clicked action button
                     val snackBarResult = snackbarHostState.showSnackbar(
-                                                message = text,
-                                                actionLabel = message.label,
-                                                duration = duration,
-                                            ) == ActionPerformed
+                        message = text,
+                        actionLabel = message.label,
+                        duration = duration,
+                    ) == ActionPerformed
 
-                    //Handle result action
+                    // Handle result action
                     if (snackBarResult) {
                         message.onConfirm?.invoke()
                     } else {
@@ -289,10 +287,8 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
         it.hasRoute(route)
     } ?: false
 
-
-
 private fun getSnackbarValues(context: Context, message: MessageData): Pair<String, SnackbarDuration> {
-    //Duration and Text values dictated here by the UI
+    // Duration and Text values dictated here by the UI
     return when (message.type) {
         OFFLINE -> context.getString(R.string.not_connected) to SnackbarDuration.Indefinite
         is MESSAGE -> (message.type as MESSAGE).value to SnackbarDuration.Long
