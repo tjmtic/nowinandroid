@@ -24,7 +24,7 @@ import java.util.UUID
  * Interface for handling error messages.
  */
 interface ErrorMonitor {
-    fun addMessageByString(message: String)
+    fun addMessageByString(message: String): MessageData
 
     fun addMessageByData(message: MessageData)
 

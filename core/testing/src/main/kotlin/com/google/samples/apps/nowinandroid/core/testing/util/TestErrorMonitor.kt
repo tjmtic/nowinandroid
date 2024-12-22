@@ -16,32 +16,37 @@
 
 package com.google.samples.apps.nowinandroid.core.testing.util
 
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMonitor
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import java.util.UUID
 
 class TestErrorMonitor() : ErrorMonitor {
 
-    override fun addErrorMessage(
-        type: ErrorType,
-        label: String?,
-        successAction: (() -> Unit)?,
-        failureAction: (() -> Unit)?,
-    ): UUID? {
-        return UUID.fromString("1")
+    val testData: MessageData = MessageData(type = MessageType.MESSAGE("Test Message"))
+    var count: Int = 0
+
+    override fun addMessageByString(
+        message: String
+    ): MessageData {
+        count += 1
+        return testData
+    }
+
+    override fun addMessageByData(message: MessageData) {
+        count += 1
     }
 
 
-    override fun clearErrorMessage(id: UUID) {
-        // Do nothing
+    override fun clearMessage(message: MessageData) {
+        count -= 1
     }
 
-    override fun clearMessages() {
-        // Do nothing
+    override fun clearAllMessages() {
+        count = 0
     }
 
-    override val errorMessages: Flow<List<ErrorMessage?>> = flowOf(listOf(ErrorMessage(type = ErrorType.MESSAGE(""), id = UUID.fromString("1"))))
+
+    override val messages: Flow<List<MessageData?>> = flowOf(List(count){testData})
 }

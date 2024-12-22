@@ -16,33 +16,34 @@
 
 package com.google.samples.apps.nowinandroid.core.data.test
 
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
 import com.google.samples.apps.nowinandroid.core.data.util.ErrorMonitor
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import java.util.UUID
 import javax.inject.Inject
 
 class FakeErrorMonitor @Inject constructor() : ErrorMonitor {
+    private val fakeData: MessageData = MessageData(type = MessageType.MESSAGE("Fake Message"))
 
-    override fun addErrorMessage(
-        type: ErrorType,
-        label: String?,
-        successAction: (() -> Unit)?,
-        failureAction: (() -> Unit)?,
-    ): UUID? {
-        return UUID.randomUUID()
+    override fun addMessageByString(
+        message: String,
+    ): MessageData {
+        return fakeData
     }
 
-    override fun clearErrorMessage(id: UUID) {
-        // Do nothing
+    override fun addMessageByData(message: MessageData) {
+        //Do Nothing
     }
 
-    override fun clearMessages() {
-        // Do nothing
+    override fun clearMessage(message: MessageData) {
+        //Do Nothing
     }
 
-    override val errorMessages: Flow<List<ErrorMessage?>>
+    override fun clearAllMessages() {
+        //Do Nothing
+    }
+
+    override val messages: Flow<List<MessageData?>>
         get() = flowOf(emptyList())
 }

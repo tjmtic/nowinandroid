@@ -36,8 +36,11 @@ class StateErrorMonitor @Inject constructor(): ErrorMonitor {
      * Creates a [MessageData] and adds it to the list.
      * @param message: String value for message to add.
      */
-    override fun addMessageByString(message: String) {
-        messages.update { it + MessageData(type = MessageType.MESSAGE(message)) }
+    override fun addMessageByString(message: String): MessageData {
+        val data = MessageData(type = MessageType.MESSAGE(message))
+        messages.update { it + data }
+
+        return data
     }
     /**
      * Take in a [MessageData] and adds it to the list.

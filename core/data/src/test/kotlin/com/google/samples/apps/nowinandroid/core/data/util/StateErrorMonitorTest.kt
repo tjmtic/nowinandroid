@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorType
 import com.google.samples.apps.nowinandroid.core.data.util.StateErrorMonitor
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -26,16 +26,20 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 /**
- * Unit tests for [SnackbarErrorMonitor].
+ * Unit tests for [StateErrorMonitor].
  */
 
-class SnackbarErrorMonitorTest {
+class StateErrorMonitorTest {
 
 
     // Subject under test.
     private lateinit var state: StateErrorMonitor
 
-    private lateinit var messages: List<ErrorMessage?>
+    private lateinit var messages: List<MessageData?>
+
+    private val fakeString = "Test Error Message"
+    private val fakeData = MessageData(MessageType.MESSAGE("Test Error Message 1"))
+    private val fakeData2 = MessageData(MessageType.MESSAGE("Test Error Message 2"))
 
     @Before
     fun setup() {
@@ -45,7 +49,9 @@ class SnackbarErrorMonitorTest {
 
     @Test
     fun whenErrorIsNotAdded_NullIsPresent() = runTest(UnconfinedTestDispatcher()) {
-        backgroundScope.launch { state.errorMessages.collect() }
+        backgroundScope.launch { state.messages.collect{
+            messages = it
+        } }
         assertEquals(
             emptyList(),
             messages,
@@ -53,36 +59,53 @@ class SnackbarErrorMonitorTest {
     }
 
     @Test
-    fun whenErrorIsAdded_ErrorMessageIsPresent() = runTest(UnconfinedTestDispatcher()) {
+    fun whenErrorIsAddedByString_ErrorMessageIsPresent() = runTest(UnconfinedTestDispatcher()) {
         backgroundScope.launch {
-            state.errorMessages.collect {
+            state.messages.collect {
                 messages = it
             }
         }
 
-        val id = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message"))
+        val expect = state.addMessageByString(fakeString)
 
         assertEquals(
-            id,
-            messages.firstOrNull()?.id,
+            expect,
+            messages.firstOrNull(),
+        )
+    }
+
+    @Test
+    fun whenErrorIsAddedByData_ErrorMessageIsPresent() = runTest(UnconfinedTestDispatcher()) {
+        backgroundScope.launch {
+            state.messages.collect {
+                messages = it
+            }
+        }
+
+        state.addMessageByData(fakeData)
+
+        assertEquals(
+            fakeData,
+            messages.firstOrNull(),
         )
     }
 
     @Test
     fun whenErrorsAreAdded_FirstErrorMessageIsPresent() =
         runTest(UnconfinedTestDispatcher()) {
-            val id1 = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 1"))
-            state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 2"))
+
+            state.addMessageByData(fakeData)
+            state.addMessageByString(fakeString)
 
             backgroundScope.launch {
-                state.errorMessages.collect {
+                state.messages.collect {
                     messages = it
                 }
             }
 
             assertEquals(
-                id1,
-                messages.firstOrNull()?.id,
+                fakeData,
+                messages.firstOrNull(),
             )
         }
 
@@ -90,12 +113,12 @@ class SnackbarErrorMonitorTest {
     fun whenErrorIsCleared_ErrorMessageIsNotPresent() =
         runTest(UnconfinedTestDispatcher()) {
             backgroundScope.launch {
-                state.errorMessages.collect {
+                state.messages.collect {
                     messages = it
                 }
             }
-            val id = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message"))
-            state.clearErrorMessage(id)
+            state.addMessageByData(fakeData)
+            state.clearMessage(fakeData)
 
             assertEquals(
                 emptyList(),
@@ -107,18 +130,18 @@ class SnackbarErrorMonitorTest {
     fun whenErrorsAreCleared_NextErrorMessageIsPresent() =
         runTest(UnconfinedTestDispatcher()) {
             backgroundScope.launch {
-                state.errorMessages.collect {
+                state.messages.collect {
                     messages = it
                 }
             }
-            val id1 = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 1"))
-            val id2 = state.addErrorMessage(ErrorType.MESSAGE("Test Error Message 2"))
+            state.addMessageByData(fakeData)
+            state.addMessageByData(fakeData2)
 
-            state.clearErrorMessage(id1)
+            state.clearMessage(fakeData)
 
             assertEquals(
-                    id2,
-                    messages.firstOrNull()?.id,
+                    fakeData2,
+                    messages.firstOrNull(),
                 )
         }
 }
