@@ -43,7 +43,7 @@ class StateErrorMonitor @Inject constructor(): ErrorMonitor {
         return data
     }
     /**
-     * Take in a [MessageData] and adds it to the list.
+     * Add a [MessageData] to the list.
      * @param message: [MessageData] to add.
      */
     override fun addMessageByData(message: MessageData) {
@@ -58,7 +58,7 @@ class StateErrorMonitor @Inject constructor(): ErrorMonitor {
     }
 
     /**
-     * Reset to empty list
+     * Remove all from list, reset to empty list
      */
     override fun clearAllMessages(){
         messages.update { emptyList() }

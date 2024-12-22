@@ -292,7 +292,7 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
 
 
 private fun getSnackbarValues(context: Context, message: MessageData): Pair<String, SnackbarDuration> {
-    //Duration and Text values dictated by the UI layer
+    //Duration and Text values dictated here by the UI
     return when (message.type) {
         OFFLINE -> context.getString(R.string.not_connected) to SnackbarDuration.Indefinite
         is MESSAGE -> (message.type as MESSAGE).value to SnackbarDuration.Long
