@@ -111,20 +111,20 @@ fun NiaApp(
 
                 stateMessage?.let { message ->
 
-                    val snackBarMessage: SnackBarMessage = getSnackbarMessage(context, message)
+                    val (text, duration) = getSnackbarValues(context, message)
 
                     //Determine whether user clicked action button
                     val snackBarResult = snackbarHostState.showSnackbar(
-                                                message = snackBarMessage.message,
-                                                actionLabel = snackBarMessage.label,
-                                                duration = snackBarMessage.duration,
+                                                message = text,
+                                                actionLabel = message.label,
+                                                duration = duration,
                                             ) == ActionPerformed
 
                     //Handle result action
                     if (snackBarResult) {
-                        snackBarMessage.onActionPerformed()
+                        message.onConfirm?.invoke()
                     } else {
-                        snackBarMessage.onActionNotPerformed()
+                        message.onDelay?.invoke()
                     }
 
                     // Remove Message from List
@@ -290,27 +290,12 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     } ?: false
 
 
-private fun getSnackbarMessage(context: Context, message: MessageData): SnackBarMessage {
+
+private fun getSnackbarValues(context: Context, message: MessageData): Pair<String, SnackbarDuration> {
     //Duration and Text values dictated by the UI layer
-    val (messageText, duration) = when (message.type) {
+    return when (message.type) {
         OFFLINE -> context.getString(R.string.not_connected) to SnackbarDuration.Indefinite
         is MESSAGE -> (message.type as MESSAGE).value to SnackbarDuration.Long
         UNKNOWN -> context.getString(R.string.unknown_error) to SnackbarDuration.Short
     }
-
-    return SnackBarMessage(
-        message = messageText,
-        duration = duration,
-        label = message.label,
-        onActionPerformed = message.onConfirm ?: {},
-        onActionNotPerformed = message.onDelay ?: {}
-    )
 }
-
-data class SnackBarMessage(
-    val message: String,
-    val duration: SnackbarDuration,
-    val label: String? = null,
-    val onActionPerformed: (() -> Unit),
-    val onActionNotPerformed: (() -> Unit),
-)
