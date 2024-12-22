@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.core.data.util
 
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -23,24 +24,13 @@ import java.util.UUID
  * Interface for handling error messages.
  */
 interface ErrorMonitor {
-    fun addErrorMessage(type: ErrorType,
-        label: String? = null,
-        onConfirm: (() -> Unit)? = null,
-        onDelay: (() -> Unit)? = null)
-    : UUID?
+    fun addMessageByString(message: String)
 
-    fun clearErrorMessage(id: UUID)
+    fun addMessageByData(message: MessageData)
 
-    fun clearMessages()
+    fun clearMessage(message: MessageData)
 
-    val errorMessages: Flow<List<ErrorMessage?>>
-}
+    fun clearAllMessages()
 
-/**
- * Specified Errors
- */
-sealed class ErrorType {
-    data object OFFLINE : ErrorType()
-    data class MESSAGE(val value: String) : ErrorType()
-    data object UNKNOWN : ErrorType()
+    val messages: Flow<List<MessageData?>>
 }

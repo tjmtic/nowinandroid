@@ -16,9 +16,10 @@
 
 package com.google.samples.apps.nowinandroid.core.data.util
 
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -27,55 +28,36 @@ import javax.inject.Inject
 
 class StateErrorMonitor @Inject constructor(): ErrorMonitor {
     /**
-     * List of [ErrorMessage] to be shown to the user
+     * List of [MessageData] to be shown
      */
-    override val errorMessages = MutableStateFlow<List<ErrorMessage>>(emptyList())
+    override val messages = MutableStateFlow<List<MessageData>>(emptyList())
 
     /**
-     * Creates an [ErrorMessage] from String value and adds it to the list.
-     *
-     * @param error: String value of the error message.
-     *
-     * Returns the UUID of the new [ErrorMessage] if success
-     * Returns null if [error] is Blank
+     * Creates a [MessageData] and adds it to the list.
+     * @param message: String value for message to add.
      */
-    override fun addErrorMessage(type: ErrorType,
-        label: String?,
-        onConfirm: (() -> Unit)?,
-        onDelay: (() -> Unit)?
-    ): UUID {
-
-        val newError = ErrorMessage(
-                type = type,
-                label = label,
-                onConfirm = onConfirm,
-                onDelay = onDelay
-            )
-
-        errorMessages.update { it + newError }
-
-        return newError.id
+    override fun addMessageByString(message: String) {
+        messages.update { it + MessageData(type = MessageType.MESSAGE(message)) }
+    }
+    /**
+     * Take in a [MessageData] and adds it to the list.
+     * @param message: [MessageData] to add.
+     */
+    override fun addMessageByData(message: MessageData) {
+        messages.update { it + message }
     }
 
     /**
-     * Removes the [ErrorMessage] with the specified [id] from the list.
+     * Removes the [MessageData] from the list.
      */
-    override fun clearErrorMessage(id: UUID) {
-        errorMessages.update { it.filter { item -> item.id != id } }
+    override fun clearMessage(message: MessageData) {
+        messages.update { list -> list.filterNot { it == message } }
     }
 
-    override fun clearMessages(){
-        errorMessages.update { emptyList() }
+    /**
+     * Reset to empty list
+     */
+    override fun clearAllMessages(){
+        messages.update { emptyList() }
     }
 }
-
-/**
- * Models the data needed for an error message to be displayed and tracked.
- */
-data class ErrorMessage(
-    val type: ErrorType,
-    val id: UUID = UUID.randomUUID(),
-    val label: String? = null,
-    val onConfirm: (() -> Unit)? = null,
-    val onDelay: (() -> Unit)? = null,
-)

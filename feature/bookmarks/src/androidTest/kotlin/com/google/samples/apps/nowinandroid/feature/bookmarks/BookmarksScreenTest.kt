@@ -55,7 +55,7 @@ class BookmarksScreenTest {
         composeTestRule.setContent {
             BookmarksScreen(
                 feedState = NewsFeedUiState.Loading,
-                onShowSnackbar = { _, _, _, _ -> Unit },
+                onShowSnackbar = { _ -> Unit },
                 removeFromBookmarks = {},
                 onTopicClick = {},
                 onNewsResourceViewed = {},
@@ -76,7 +76,7 @@ class BookmarksScreenTest {
                 feedState = NewsFeedUiState.Success(
                     userNewsResourcesTestData.take(2),
                 ),
-                onShowSnackbar = { _, _, _, _ -> Unit },
+                onShowSnackbar = { _ -> Unit },
                 removeFromBookmarks = {},
                 onTopicClick = {},
                 onNewsResourceViewed = {},
@@ -181,7 +181,7 @@ class BookmarksScreenTest {
             CompositionLocalProvider(LocalLifecycleOwner provides testLifecycleOwner) {
                 BookmarksScreen(
                     feedState = NewsFeedUiState.Success(emptyList()),
-                    onShowSnackbar = { _, _, _, _ -> Unit },
+                    onShowSnackbar = { _ -> Unit },
                     removeFromBookmarks = {},
                     onTopicClick = {},
                     onNewsResourceViewed = {},

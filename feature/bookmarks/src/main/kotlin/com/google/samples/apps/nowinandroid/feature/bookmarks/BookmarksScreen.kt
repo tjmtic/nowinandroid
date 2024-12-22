@@ -66,6 +66,8 @@ import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollba
 import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.scrollbarState
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintTheme
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType
 import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState.Loading
@@ -78,7 +80,7 @@ import com.google.samples.apps.nowinandroid.core.ui.newsFeed
 @Composable
 internal fun BookmarksRoute(
     onTopicClick: (String) -> Unit,
-    onShowSnackbar: (String, String?, (() -> Unit)?, (() -> Unit)?) -> Unit,
+    onShowSnackbar: (MessageData) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
@@ -103,7 +105,7 @@ internal fun BookmarksRoute(
 @Composable
 internal fun BookmarksScreen(
     feedState: NewsFeedUiState,
-    onShowSnackbar: (String, String?, (() -> Unit)?, (() -> Unit)?) -> Unit,
+    onShowSnackbar: (MessageData) -> Unit,
     removeFromBookmarks: (String) -> Unit,
     onNewsResourceViewed: (String) -> Unit,
     onTopicClick: (String) -> Unit,
@@ -117,7 +119,14 @@ internal fun BookmarksScreen(
 
     LaunchedEffect(shouldDisplayUndoBookmark) {
         if (shouldDisplayUndoBookmark) {
-            onShowSnackbar(bookmarkRemovedMessage, undoText, { undoBookmarkRemoval() }, { clearUndoState() })
+            onShowSnackbar(
+                MessageData(
+                    type= MessageType.MESSAGE(bookmarkRemovedMessage),
+                    label = undoText,
+                    onConfirm = { undoBookmarkRemoval() },
+                    onDelay = { clearUndoState() }
+                )
+            )
         }
     }
 

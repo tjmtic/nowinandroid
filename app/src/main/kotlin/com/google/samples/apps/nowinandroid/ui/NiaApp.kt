@@ -66,10 +66,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.samples.apps.nowinandroid.R
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorMessage
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.MESSAGE
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.OFFLINE
-import com.google.samples.apps.nowinandroid.core.data.util.ErrorType.UNKNOWN
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaGradientBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaNavigationSuiteScaffold
@@ -77,6 +73,10 @@ import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaTopAp
 import com.google.samples.apps.nowinandroid.core.designsystem.icon.NiaIcons
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.GradientColors
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradientColors
+import com.google.samples.apps.nowinandroid.core.model.data.MessageData
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType.MESSAGE
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType.UNKNOWN
+import com.google.samples.apps.nowinandroid.core.model.data.MessageType.OFFLINE
 import com.google.samples.apps.nowinandroid.feature.settings.SettingsDialog
 import com.google.samples.apps.nowinandroid.navigation.NiaNavHost
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
@@ -128,7 +128,7 @@ fun NiaApp(
                     }
 
                     // Remove Message from List
-                    appState.errorMonitor.clearErrorMessage(message.id)
+                    appState.errorMonitor.clearMessage(message)
                 }
             }
 
@@ -290,7 +290,7 @@ private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     } ?: false
 
 
-private fun getSnackbarMessage(context: Context, message: ErrorMessage): SnackBarMessage {
+private fun getSnackbarMessage(context: Context, message: MessageData): SnackBarMessage {
     //Duration and Text values dictated by the UI layer
     val (messageText, duration) = when (message.type) {
         OFFLINE -> context.getString(R.string.not_connected) to SnackbarDuration.Indefinite
