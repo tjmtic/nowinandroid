@@ -63,7 +63,9 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import com.google.samples.apps.nowinandroid.core.data.repository.TopicsRepository
 import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
 import com.google.samples.apps.nowinandroid.core.data.test.repository.FakeUserDataRepository
+import com.google.samples.apps.nowinandroid.core.data.util.ErrorMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.StateErrorMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneMonitor
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import com.google.samples.apps.nowinandroid.core.testing.util.DefaultRoborazziOptions
@@ -112,6 +114,8 @@ class SnackbarInsetsScreenshotTests {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
+
+    var errorMonitor: ErrorMonitor = StateErrorMonitor()
 
     @Inject
     lateinit var timeZoneMonitor: TimeZoneMonitor
@@ -254,6 +258,7 @@ class SnackbarInsetsScreenshotTests {
                             NiaTheme {
                                 val appState = rememberNiaAppState(
                                     networkMonitor = networkMonitor,
+                                    errorMonitor = errorMonitor,
                                     userNewsResourceRepository = userNewsResourceRepository,
                                     timeZoneMonitor = timeZoneMonitor,
                                 )
